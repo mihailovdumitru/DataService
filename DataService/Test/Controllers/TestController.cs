@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.Test;
 
 namespace Test.Controllers
 {
@@ -27,8 +29,11 @@ namespace Test.Controllers
         
         // POST: api/Test
         [HttpPost]
-        public void Post([FromBody]string value)
+        //[EnableCors("UrlPolicy")]
+        public ActionResult Post([FromBody]TestModel test)
         {
+            Console.WriteLine();
+            return Ok("Cu succes");
         }
         
         // PUT: api/Test/5

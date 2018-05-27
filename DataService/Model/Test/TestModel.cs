@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Model.Test
 {
-    public class Test
+    public class TestModel
     {
         public string Lecture { get; set; }
         public List<QuestionWithAnswers> Questions { get; set; }

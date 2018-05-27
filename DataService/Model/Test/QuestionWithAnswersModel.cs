@@ -6,7 +6,7 @@ namespace Model.Test
 {
     public class QuestionWithAnswers
     {
-        public Question Question { get; set; }
-        public List<Answer> Answers { get; set; }
+        public QuestionModel Question { get; set; }
+        public List<AnswerModel> Answers { get; set; }
     }
 }
