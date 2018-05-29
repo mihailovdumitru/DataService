@@ -1,0 +1,13 @@
+﻿CREATE PROCEDURE [dbo].[sp_insertAnswer]
+	@ANSWER nvarchar(300)
+AS
+IF NOT EXISTS(SELECT 1 FROM Answers WHERE Answer=@ANSWER) 
+BEGIN
+	SET NOCOUNT ON;
+
+	INSERT INTO Answers(Answer) 
+			     VALUES (@ANSWER); 
+	SELECT AnswerID=SCOPE_IDENTITY()
+END
+ELSE SELECT AnswerID FROM Answers WHERE Answer=@ANSWER
+GO

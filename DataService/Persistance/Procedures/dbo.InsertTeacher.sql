@@ -1,0 +1,16 @@
+﻿CREATE PROCEDURE [dbo].[sp_InsertTeacher]
+	@FIRSTNAME nvarchar(50), 
+	@LASTNAME nvarchar(50)
+AS
+IF NOT EXISTS(SELECT 1 FROM Teacher WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME) 
+BEGIN
+	SET NOCOUNT ON;
+
+	INSERT INTO Teacher (
+	FirstName, LastName) 
+	VALUES (
+	@FIRSTNAME, @LASTNAME); 
+
+	SELECT TeacherID=SCOPE_IDENTITY()
+END
+GO

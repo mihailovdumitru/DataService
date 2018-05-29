@@ -5,7 +5,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Model.Test;
+using Model.DTO.Test;
+using Model.Teacher;
+using Persistance.Facade.Interfaces;
+using Persistance.Interfaces;
 
 namespace Test.Controllers
 {
@@ -13,6 +16,15 @@ namespace Test.Controllers
     [Route("api/Test")]
     public class TestController : Controller
     {
+        private readonly ITestRepository testRepo;
+        private readonly ITestFacade testFacade;
+
+        public TestController(ITestRepository testRepo, ITestFacade testFacade)
+        {
+            this.testRepo = testRepo;
+            this.testFacade = testFacade;
+        }
+
         // GET: api/Test
         [HttpGet]
         public IEnumerable<string> Get()
@@ -30,9 +42,14 @@ namespace Test.Controllers
         // POST: api/Test
         [HttpPost]
         //[EnableCors("UrlPolicy")]
-        public ActionResult Post([FromBody]TestModel test)
+        public ActionResult Post([FromBody]TestModelDto test)
         {
-            Console.WriteLine();
+            test.LectureID = 1;
+            test.TeacherID = 1;
+            int testId = testFacade.AddTestObject(test);
+            
+
+
             return Ok("Cu succes");
         }
         

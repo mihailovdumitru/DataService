@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Model.Test
+namespace Model.DTO.Test
 {
-    public class AnswerModel
+    public class AnswerModelDto
     {
         public string Content { get; set; }
-        public string Correct { get; set; }
+        public bool Correct { get; set; }
     }
 }

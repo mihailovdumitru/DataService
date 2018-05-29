@@ -10,6 +10,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Persistance.Facade.Implementation;
+using Persistance.Facade.Interfaces;
+using Persistance.Interfaces;
+using Persistance.Mapper;
+using Persistance.Repositories;
 
 namespace Test
 {
@@ -26,19 +31,20 @@ namespace Test
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
+
             services.AddCors(o => o.AddPolicy("UrlPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
+            var config = new AutoMapper.MapperConfiguration(mapperConfig => mapperConfig.AddProfile(new MappingProfile()));
+            var mapper = config.CreateMapper();
+            services.AddSingleton(mapper);
 
-            services.Configure<MvcOptions>(options =>
-            {
-                options.Filters.Add(new CorsAuthorizationFilterFactory("AllowSpecificOrigin"));
-            });
-
-            services.AddMvc();
+            services.AddScoped<ITestRepository, TestRepository>();
+            services.AddScoped<ITestFacade, TestFacade>();
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
