@@ -6,8 +6,8 @@ using System.Text;
 
 namespace Persistance.Interfaces
 {
-    public interface ITestRepository
+    public interface ITeacherRepository
     {
-        int AddTest(Test test, SqlConnection conn = null);
+        int AddTeacher(Teacher teacher, SqlConnection conn = null);
     }
 }

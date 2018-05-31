@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model.DTO.Test;
-using Model.Teacher;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 

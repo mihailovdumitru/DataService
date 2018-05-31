@@ -16,10 +16,18 @@ namespace Persistance.Facade.Implementation
     {
         private readonly IMapper mapper;
         private readonly ITestRepository testRepo;
-        public TestFacade(IMapper mapper,ITestRepository testRepo)
+        private readonly IQuestionRepository questionRepo;
+        private readonly IAnswerRespository answerRepo;
+        private readonly IQuestionAnswerRespository questionAnswerRepo;
+
+        public TestFacade(IMapper mapper,ITestRepository testRepo,IQuestionRepository questionRepo,
+                          IAnswerRespository answerRepo,IQuestionAnswerRespository questionAnswerRepo)
         {
             this.mapper = mapper;
             this.testRepo = testRepo;
+            this.questionRepo = questionRepo;
+            this.answerRepo = answerRepo;
+            this.questionAnswerRepo = questionAnswerRepo;
         }
 
         public int AddTestObject(TestModelDto test)
@@ -40,12 +48,12 @@ namespace Persistance.Facade.Implementation
                 {
                     questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
                     questionObj.TestID = testId;
-                    questionID = testRepo.AddQuestion(questionObj, conn);
+                    questionID = questionRepo.AddQuestion(questionObj, conn);
                     foreach(var answer in question.Answers)
                     {
                         answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
-                        answerID = testRepo.AddAnswer(answerObj, conn);
-                        testRepo.AddQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                        answerID = answerRepo.AddAnswer(answerObj, conn);
+                        questionAnswerRepo.AddQuestionAnswer(questionID, answerID, answer.Correct, conn);
                     }
                 }
                 if (conn.State == ConnectionState.Open)
@@ -55,17 +63,6 @@ namespace Persistance.Facade.Implementation
             }
             
             return testId;
-        }
-
-
-        public Test TestModelDtoToTest(TestModelDto test)
-        {
-            return new Test()
-            {
-                Naming = test.Naming,
-                TeacherID = test.TeacherID,
-                LectureID = test.LectureID
-            };
         }
     }
 }

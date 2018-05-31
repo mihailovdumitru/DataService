@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE [dbo].[sp_getClasses]
+AS
+	SET NOCOUNT ON;
+	SELECT * FROM Class;	
+GO

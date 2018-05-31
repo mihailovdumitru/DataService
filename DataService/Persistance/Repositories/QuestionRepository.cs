@@ -1,38 +1,39 @@
-﻿using Persistance.Interfaces;
+﻿using Model.DBObjects;
+using Persistance.Interfaces;
 using Persistance.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Text;
-using Model.DBObjects;
 
 namespace Persistance.Repositories
 {
-    public class TestRepository: SqlBase, ITestRepository
+    public class QuestionRepository: SqlBase, IQuestionRepository
     {
-        private static readonly TestRepository _instance = new TestRepository();
 
-        public int AddTest(Test test, SqlConnection conn = null)
+        public int AddQuestion(Question question, SqlConnection conn = null)
         {
-            int testID = -1;
+            int questionID = -1;
             bool nullConnection = false;
 
             UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-            using (var cmd = new SqlCommand("sp_insertTest", conn))
+            using (var cmd = new SqlCommand("sp_insertQuestion", conn))
             {
-                cmd.Parameters.AddWithValue("@NAME", test.Naming);
-                cmd.Parameters.AddWithValue("@TEACHER_ID", test.TeacherID);
-                cmd.Parameters.AddWithValue("@LECTURE_ID", test.LectureID);
+                cmd.Parameters.AddWithValue("@QUESTION", question.Content);
+                cmd.Parameters.AddWithValue("@POINTS", question.Points);
+                cmd.Parameters.AddWithValue("@TEST_ID", question.TestID);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        testID = DataUtil.GetDataReaderValue<int>("TestID", reader);
+                        questionID = DataUtil.GetDataReaderValue<int>("QuestionID", reader);
                     }
                 }
                 if (conn.State == ConnectionState.Open && nullConnection)
@@ -41,7 +42,7 @@ namespace Persistance.Repositories
                 }
             }
 
-            return testID;
+            return questionID;
         }
     }
 }

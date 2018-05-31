@@ -9,7 +9,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Model", "Model\Model.csproj", "{755C50D2-C5F8-47EE-87F6-A0770257EEB3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Persistance", "Persistance\Persistance.csproj", "{AFBB54B9-98B4-4ADC-A856-AB5274186FAC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Persistance", "Persistance\Persistance.csproj", "{AFBB54B9-98B4-4ADC-A856-AB5274186FAC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataService.Api", "DataService.Api\DataService.Api.csproj", "{F5367B32-331E-4024-AFC6-CA120E188608}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4CF67D3B-654A-4625-BF81-A675D639E4A0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +37,14 @@ Global
 		{AFBB54B9-98B4-4ADC-A856-AB5274186FAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AFBB54B9-98B4-4ADC-A856-AB5274186FAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AFBB54B9-98B4-4ADC-A856-AB5274186FAC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F5367B32-331E-4024-AFC6-CA120E188608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F5367B32-331E-4024-AFC6-CA120E188608}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F5367B32-331E-4024-AFC6-CA120E188608}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F5367B32-331E-4024-AFC6-CA120E188608}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CF67D3B-654A-4625-BF81-A675D639E4A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CF67D3B-654A-4625-BF81-A675D639E4A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CF67D3B-654A-4625-BF81-A675D639E4A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CF67D3B-654A-4625-BF81-A675D639E4A0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
