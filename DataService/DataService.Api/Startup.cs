@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Persistance.Facade.Implementation;
+using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 using Persistance.Mapper;
 using Persistance.Repositories;
@@ -60,6 +62,8 @@ namespace DataService.Api
             services.AddScoped<IStudentRepository, StudentRepository>();
             services.AddScoped<ITeacherRepository, TeacherRepository>();
             services.AddScoped<ITestRepository, TestRepository>();
+            services.AddScoped<ITeacherFacade, TeacherFacade>();
+            services.AddScoped<ITeacherLecturesRepository, TeacherLecturesRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

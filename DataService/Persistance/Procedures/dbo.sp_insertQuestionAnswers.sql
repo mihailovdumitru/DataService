@@ -1,5 +1,5 @@
 ﻿CREATE PROCEDURE [dbo].[sp_insertQuestionAnswers]
-	@QUESTION_ID nvarchar(400), 
+	@QUESTION_ID int, 
 	@ANSWER_ID int,
 	@CORRECT bit
 AS

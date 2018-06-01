@@ -4,6 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Model.DTO;
+using Persistance.Facade.Interfaces;
+using Persistance.Interfaces;
 
 namespace DataService.Api.Controllers
 {
@@ -11,6 +14,12 @@ namespace DataService.Api.Controllers
     [Route("api/Teachers")]
     public class TeachersController : Controller
     {
+
+        private readonly ITeacherFacade teacherFacade;
+        public TeachersController(ITeacherFacade teacherFacade)
+        {
+            this.teacherFacade = teacherFacade;
+        }
         // GET: api/Teachers
         [HttpGet]
         public IEnumerable<string> Get()
@@ -27,8 +36,9 @@ namespace DataService.Api.Controllers
         
         // POST: api/Teachers
         [HttpPost]
-        public void Post([FromBody]string value)
+        public int Post([FromBody]TeacherDto teacher)
         {
+            return teacherFacade.AddTeacher(teacher);
         }
         
         // PUT: api/Teachers/5

@@ -42,5 +42,41 @@ namespace Persistance.Repositories
 
             return lectureID;
         }
+
+        public List<Lecture> GetLectures(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            Lecture lecture = null;
+            List<Lecture> lectures = new List<Lecture>();
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_getLectures", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lecture = new Lecture
+                        {
+                            LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader),
+                            Name = DataUtil.GetDataReaderValue<string>("Name", reader),
+                            YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
+                        };
+                        lectures.Add(lecture);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return lectures;
+        }
     }
 }

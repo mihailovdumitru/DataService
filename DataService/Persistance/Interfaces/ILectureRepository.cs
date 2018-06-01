@@ -9,5 +9,6 @@ namespace Persistance.Interfaces
     public interface ILectureRepository
     {
         int AddLecture(Lecture lecture, SqlConnection conn = null);
+        List<Lecture> GetLectures(SqlConnection conn = null);
     }
 }

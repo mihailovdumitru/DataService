@@ -23,9 +23,9 @@ namespace DataService.Api.Controllers
 
         // GET: api/Lectures
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<Lecture> Get()
         {
-            return new string[] { "value1", "value2" };
+            return lectureRepo.GetLectures();
         }
 
         // GET: api/Lectures/5

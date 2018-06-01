@@ -22,7 +22,7 @@ namespace DataService.Api.Controllers
 
         // GET: api/Classes
         [HttpGet]
-        public List<StudyClass> Get()
+        public IEnumerable<StudyClass> Get()
         {
             return classRepo.GetClasses();
         }

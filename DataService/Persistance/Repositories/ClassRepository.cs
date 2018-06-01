@@ -44,7 +44,7 @@ namespace Persistance.Repositories
         public List<StudyClass> GetClasses(SqlConnection conn = null)
         {
             bool nullConnection = false;
-            StudyClass studyClass = new StudyClass();
+            StudyClass studyClass = null;
             List<StudyClass> studyClasses = new List<StudyClass>();
 
             UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
@@ -59,8 +59,11 @@ namespace Persistance.Repositories
                 {
                     while (reader.Read())
                     {
-                        studyClass.ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader);
-                        studyClass.Name = DataUtil.GetDataReaderValue<string>("Name", reader);
+                        studyClass = new StudyClass
+                        {
+                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
+                            Name = DataUtil.GetDataReaderValue<string>("Name", reader)
+                        };
                         studyClasses.Add(studyClass);
                     }
                 }

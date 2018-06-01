@@ -42,5 +42,43 @@ namespace Persistance.Repositories
 
             return studentID;
         }
+
+        public List<Student> GetStudents(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            Student student = null;
+            List<Student> students = new List<Student>();
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_getStudents", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        student = new Student
+                        {
+                            StudentID = DataUtil.GetDataReaderValue<int>("StudentID", reader),
+                            FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
+                            LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
+                            Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader)
+                        };
+                        students.Add(student);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return students;
+        }
     }
 }
