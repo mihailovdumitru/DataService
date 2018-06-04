@@ -12,17 +12,17 @@ namespace Persistance.Repositories
     public class LectureRepository: SqlBase, ILectureRepository
     {
         private static readonly LectureRepository _instance = new LectureRepository();
-        public int AddLecture(Lecture lecture, SqlConnection conn = null)
+        public int AddOrUpdate(Lecture lecture, SqlConnection conn = null, int lectureID = -1)
         {
-            int lectureID = -1;
             bool nullConnection = false;
 
             UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-            using (var cmd = new SqlCommand("sp_insertLecture", conn))
+            using (var cmd = new SqlCommand("sp_insertOrUpdateLecture", conn))
             {
                 cmd.Parameters.AddWithValue("@NAME", lecture.Name);
                 cmd.Parameters.AddWithValue("@YEAR_OF_STUDY", lecture.YearOfStudy);
+                cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)

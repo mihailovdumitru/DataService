@@ -1,0 +1,16 @@
+﻿CREATE PROCEDURE [dbo].[sp_insertOrUpdateClass]
+	@NAME nvarchar(20),
+	@CLASS_ID int
+AS
+IF (NOT EXISTS(SELECT 1 FROM Class WHERE Name=@NAME)  AND @CLASS_ID = -1)
+BEGIN
+	SET NOCOUNT ON;
+
+	INSERT INTO Class(Name) 
+			     VALUES (@NAME); 
+	SELECT ClassID=SCOPE_IDENTITY()
+END
+ELSE 
+	UPDATE Class SET Name=@NAME WHERE ClassID = @CLASS_ID;
+	SELECT ClassID FROM Class WHERE Name=@NAME
+GO

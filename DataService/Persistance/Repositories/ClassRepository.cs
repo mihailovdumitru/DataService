@@ -11,16 +11,16 @@ namespace Persistance.Repositories
 {
     public class ClassRepository : SqlBase, IClassRepository
     {
-        public int AddClass(StudyClass studyClass, SqlConnection conn = null)
+        public int AddOrUpdateClass(StudyClass studyClass, SqlConnection conn = null, int classID = -1)
         {
-            int classID = -1;
             bool nullConnection = false;
 
             UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-            using (var cmd = new SqlCommand("sp_insertClass", conn))
+            using (var cmd = new SqlCommand("sp_insertOrUpdateClass", conn))
             {
                 cmd.Parameters.AddWithValue("@NAME", studyClass.Name);
+                cmd.Parameters.AddWithValue("@CLASS_ID", classID);
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)

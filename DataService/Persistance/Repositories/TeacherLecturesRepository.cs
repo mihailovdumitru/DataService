@@ -32,5 +32,28 @@ namespace Persistance.Repositories
                 }
             }
         }
+
+
+        public void DeleteTeacherLecturesForTeacher(int teacherID, SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_deleteTeacherLecturesForTeacher", conn))
+            {
+                cmd.Parameters.AddWithValue("@TEACHER_ID", teacherID);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (nullConnection)
+                    conn.Open();
+                cmd.ExecuteNonQuery();
+
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+        }
     }
 }

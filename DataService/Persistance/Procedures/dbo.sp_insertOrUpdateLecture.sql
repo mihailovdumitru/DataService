@@ -1,0 +1,17 @@
+﻿CREATE PROCEDURE [dbo].[sp_insertOrUpdateLecture]
+	@NAME nvarchar(50), 
+	@YEAR_OF_STUDY int,
+	@LECTURE_ID int
+AS
+IF (NOT EXISTS(SELECT 1 FROM Lecture WHERE Name=@NAME AND YearOfStudy=@YEAR_OF_STUDY) AND @LECTURE_ID = -1)
+BEGIN
+	SET NOCOUNT ON;
+
+	INSERT INTO Lecture(Name, YearOfStudy) 
+			     VALUES (@NAME, @YEAR_OF_STUDY); 
+	SELECT LectureID=SCOPE_IDENTITY()
+END
+ELSE 
+	UPDATE Lecture SET Name=@NAME,YearOfStudy=@YEAR_OF_STUDY WHERE LectureID = @LECTURE_ID;
+	SELECT LectureID FROM Lecture WHERE Name=@NAME AND YearOfStudy=@YEAR_OF_STUDY
+GO

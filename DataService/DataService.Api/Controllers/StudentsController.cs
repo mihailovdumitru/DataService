@@ -37,13 +37,14 @@ namespace DataService.Api.Controllers
         [HttpPost]
         public int Post([FromBody]Student student)
         {
-            return studentRepo.AddStudent(student);
+            return studentRepo.AddOrUpdateStudent(student);
         }
         
         // PUT: api/Students/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public int Put(int id, [FromBody]Student student)
         {
+            return studentRepo.AddOrUpdateStudent(student, null, id);
         }
         
         // DELETE: api/ApiWithActions/5

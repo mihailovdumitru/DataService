@@ -16,15 +16,18 @@ namespace DataService.Api.Controllers
     {
 
         private readonly ITeacherFacade teacherFacade;
-        public TeachersController(ITeacherFacade teacherFacade)
+        private readonly ITeacherRepository teacherRepo;
+        public TeachersController(ITeacherFacade teacherFacade, ITeacherRepository teacherRepo)
         {
             this.teacherFacade = teacherFacade;
+            this.teacherRepo = teacherRepo;
         }
         // GET: api/Teachers
         [HttpGet]
-        public IEnumerable<string> Get()
+        public IEnumerable<TeacherDto> Get()
         {
-            return new string[] { "value1", "value2" };
+            //return teacherRepo.GetTeachersWithLectures();
+            return teacherRepo.GetTeachers();
         }
 
         // GET: api/Teachers/5
@@ -43,8 +46,9 @@ namespace DataService.Api.Controllers
         
         // PUT: api/Teachers/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        public int Put(int id, [FromBody]TeacherDto teacher)
         {
+            return teacherFacade.UpdateTeacher(teacher, id);
         }
         
         // DELETE: api/ApiWithActions/5

@@ -11,19 +11,19 @@ namespace Persistance.Repositories
 {
     public class StudentRepository : SqlBase, IStudentRepository
     {
-        public int AddStudent(Student student, SqlConnection conn = null)
+        public int AddOrUpdateStudent(Student student, SqlConnection conn = null, int studentID = -1)
         {
-            int studentID = -1;
             bool nullConnection = false;
 
             UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-            using (var cmd = new SqlCommand("sp_insertStudent", conn))
+            using (var cmd = new SqlCommand("sp_insertOrUpdateStudent", conn))
             {
                 cmd.Parameters.AddWithValue("@FIRSTNAME", student.FirstName);
                 cmd.Parameters.AddWithValue("@LASTNAME", student.LastName);
                 cmd.Parameters.AddWithValue("@EMAIL", student.Email);
                 cmd.Parameters.AddWithValue("@CLASS_ID", student.ClassID);
+                cmd.Parameters.AddWithValue("@STUDENT_ID", studentID);
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)
                     conn.Open();

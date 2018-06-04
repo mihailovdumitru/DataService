@@ -8,7 +8,7 @@ namespace Persistance.Interfaces
 {
     public interface IStudentRepository
     {
-        int AddStudent(Student student, SqlConnection conn = null);
+        int AddOrUpdateStudent(Student student, SqlConnection conn = null, int studentID = -1);
         List<Student> GetStudents(SqlConnection conn = null);
     }
 }

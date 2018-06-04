@@ -47,5 +47,28 @@ namespace Persistance.Facade.Implementation
 
             return teacherID;
         }
+
+        public int UpdateTeacher(TeacherDto teacher, int teacherID)
+        {
+            Teacher teacherObj = null;
+
+            using (var conn = new SqlConnection(base.GetConnectionString()))
+            {
+                conn.Open();
+                teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
+                teacherID = teacherRepo.AddTeacher(teacherObj, conn, teacherID);
+                teacherLecturesRepo.DeleteTeacherLecturesForTeacher(teacherID, conn);
+                foreach (var lectureID in teacher.Lectures)
+                {
+                    teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
+                }
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
+            return teacherID;
+        }
     }
 }

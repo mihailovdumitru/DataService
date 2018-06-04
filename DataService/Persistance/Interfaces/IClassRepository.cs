@@ -8,7 +8,7 @@ namespace Persistance.Interfaces
 {
     public interface IClassRepository
     {
-        int AddClass(StudyClass studyClass, SqlConnection conn = null);
+        int AddOrUpdateClass(StudyClass studyClass, SqlConnection conn = null, int classID = -1);
         List<StudyClass> GetClasses(SqlConnection conn = null);
     }
 }
