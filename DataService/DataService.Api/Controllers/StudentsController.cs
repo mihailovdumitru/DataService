@@ -14,10 +14,12 @@ namespace DataService.Api.Controllers
     public class StudentsController : Controller
     {
         private readonly IStudentRepository studentRepo;
+        private readonly IUserRepository userRepo;
 
-        public StudentsController(IStudentRepository studentRepo)
+        public StudentsController(IStudentRepository studentRepo, IUserRepository userRepo)
         {
             this.studentRepo = studentRepo;
+            this.userRepo = userRepo;
         }
         // GET: api/Students
         [HttpGet]
@@ -49,8 +51,12 @@ namespace DataService.Api.Controllers
         
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public bool Delete(int id)
         {
+            var studentToDelete = studentRepo.GetStudents().First<Student>(student => student.StudentID == id);
+
+            return userRepo.DeleteUser(studentToDelete.UserID);
+
         }
     }
 }

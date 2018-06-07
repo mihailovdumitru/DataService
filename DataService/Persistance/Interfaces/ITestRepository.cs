@@ -9,5 +9,6 @@ namespace Persistance.Interfaces
     public interface ITestRepository
     {
         int AddTest(Test test, SqlConnection conn = null);
+        IEnumerable<Test> GetTests(SqlConnection conn = null);
     }
 }

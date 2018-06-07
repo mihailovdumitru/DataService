@@ -3,17 +3,19 @@
 	@LASTNAME nvarchar(30),
 	@EMAIL nvarchar(50),
 	@CLASS_ID int,
-	@STUDENT_ID int
+	@STUDENT_ID int,
+	@USER_ID int
 AS
 IF (NOT EXISTS(SELECT 1 FROM Student WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME AND Email=@EMAIL AND ClassID=@CLASS_ID)  AND @STUDENT_ID = -1)
 BEGIN
 	SET NOCOUNT ON;
 
-	INSERT INTO Student(FirstName, LastName, Email, ClassID) 
-			     VALUES (@FIRSTNAME, @LASTNAME, @EMAIL, @CLASS_ID); 
+	INSERT INTO Student(FirstName, LastName, Email, ClassID,UserID) 
+			     VALUES (@FIRSTNAME, @LASTNAME, @EMAIL, @CLASS_ID,@USER_ID); 
 	SELECT StudentID=SCOPE_IDENTITY()
 END
 ELSE 
 	UPDATE Student SET FirstName=@FIRSTNAME,LastName=@LASTNAME,Email=@EMAIL WHERE StudentID = @STUDENT_ID;
+	UPDATE [User] SET Username = @EMAIL WHERE UserID = @USER_ID;
 	SELECT StudentID FROM Student WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME AND Email=@EMAIL AND  ClassID=@CLASS_ID
 GO

@@ -21,6 +21,7 @@ namespace Persistance.Repositories
             {
                 cmd.Parameters.AddWithValue("@NAME", studyClass.Name);
                 cmd.Parameters.AddWithValue("@CLASS_ID", classID);
+                cmd.Parameters.AddWithValue("@IS_ACTIVE", studyClass.IsValid);
 
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)
@@ -74,6 +75,31 @@ namespace Persistance.Repositories
             }
 
             return studyClasses;
+        }
+
+        public bool DeleteClass(int studyClassID, SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            bool succes = true;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_deleteClass", conn))
+            {
+                cmd.Parameters.AddWithValue("@CLASS_ID", studyClassID);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (nullConnection)
+                    conn.Open();
+                cmd.ExecuteNonQuery();
+
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return succes;
         }
     }
 }

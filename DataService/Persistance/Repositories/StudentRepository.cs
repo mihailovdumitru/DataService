@@ -24,6 +24,7 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@EMAIL", student.Email);
                 cmd.Parameters.AddWithValue("@CLASS_ID", student.ClassID);
                 cmd.Parameters.AddWithValue("@STUDENT_ID", studentID);
+                cmd.Parameters.AddWithValue("@USER_ID", student.UserID);
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)
                     conn.Open();
@@ -67,7 +68,8 @@ namespace Persistance.Repositories
                             FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
                             LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
                             Email = DataUtil.GetDataReaderValue<string>("Email", reader),
-                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader)
+                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
+                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader)
                         };
                         students.Add(student);
                     }

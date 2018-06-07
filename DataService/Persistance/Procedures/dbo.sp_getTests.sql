@@ -1,0 +1,5 @@
+﻿CREATE PROCEDURE [dbo].[sp_getTests]
+AS
+	SET NOCOUNT ON;
+	SELECT * FROM Test;	
+GO

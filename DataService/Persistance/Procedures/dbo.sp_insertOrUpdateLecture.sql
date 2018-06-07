@@ -7,8 +7,8 @@ IF (NOT EXISTS(SELECT 1 FROM Lecture WHERE Name=@NAME AND YearOfStudy=@YEAR_OF_S
 BEGIN
 	SET NOCOUNT ON;
 
-	INSERT INTO Lecture(Name, YearOfStudy) 
-			     VALUES (@NAME, @YEAR_OF_STUDY); 
+	INSERT INTO Lecture(Name, YearOfStudy, IsActive) 
+			     VALUES (@NAME, @YEAR_OF_STUDY, 1); 
 	SELECT LectureID=SCOPE_IDENTITY()
 END
 ELSE 

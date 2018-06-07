@@ -25,6 +25,7 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@LASTNAME", teacher.LastName);
                 cmd.Parameters.AddWithValue("@EMAIL", teacher.Email);
                 cmd.Parameters.AddWithValue("@TEACHER_ID", teacherId);
+                cmd.Parameters.AddWithValue("@USER_ID", teacher.UserID);
                 cmd.CommandType = CommandType.StoredProcedure;
                 if (nullConnection)
                     conn.Open();
@@ -69,6 +70,7 @@ namespace Persistance.Repositories
                             FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
                             LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
                             Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
                             Lectures = new List<Lecture>()
                         };
 
@@ -126,6 +128,7 @@ namespace Persistance.Repositories
                             FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
                             LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
                             Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
                             Lectures = new List<int>()
                         };
                         lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
@@ -154,6 +157,45 @@ namespace Persistance.Repositories
 
             return teachers;
         }
+
+
+        public Teacher GetTeacherUserAuth(string email, SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            Teacher teacher = null;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_getTeacherUserByEmail", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@EMAIL", email);
+
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        teacher = new Teacher()
+                        {
+                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                            FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
+                            LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
+                            Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader)
+                        };
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return teacher;
+        }
+
     }
 
 

@@ -11,6 +11,6 @@ namespace Model.DBObjects
         public string LastName { get; set; }
         public string Email { get; set; }
         public int ClassID { get; set; }
-
+        public int UserID { get; set; }
     }
 }

@@ -44,16 +44,22 @@ namespace Persistance.Facade.Implementation
                 conn.Open();
                 testObj = mapper.Map<TestModelDto, Test>(test);
                 testId = testRepo.AddTest(testObj, conn);
-                foreach(var question in test.Questions)
+                if (test.Questions != null)
                 {
-                    questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
-                    questionObj.TestID = testId;
-                    questionID = questionRepo.AddQuestion(questionObj, conn);
-                    foreach(var answer in question.Answers)
+                    foreach (var question in test.Questions)
                     {
-                        answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
-                        answerID = answerRepo.AddAnswer(answerObj, conn);
-                        questionAnswerRepo.AddQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                        questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
+                        questionObj.TestID = testId;
+                        questionID = questionRepo.AddQuestion(questionObj, conn);
+                        if (question.Answers != null)
+                        {
+                            foreach (var answer in question.Answers)
+                            {
+                                answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
+                                answerID = answerRepo.AddAnswer(answerObj, conn);
+                                questionAnswerRepo.AddQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                            }
+                        }
                     }
                 }
                 if (conn.State == ConnectionState.Open)

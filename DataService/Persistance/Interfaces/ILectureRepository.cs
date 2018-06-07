@@ -10,5 +10,6 @@ namespace Persistance.Interfaces
     {
         int AddOrUpdate(Lecture lecture, SqlConnection conn = null, int lectureID = -1);
         List<Lecture> GetLectures(SqlConnection conn = null);
+        bool DeleteLecture(int lectureID, SqlConnection conn = null);
     }
 }

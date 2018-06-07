@@ -52,6 +52,7 @@ namespace DataService.Api.Controllers
         [HttpDelete("{id}")]
         public void Delete(int id)
         {
+            classRepo.DeleteClass(id);
         }
     }
 }

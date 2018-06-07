@@ -17,10 +17,12 @@ namespace DataService.Api.Controllers
 
         private readonly ITeacherFacade teacherFacade;
         private readonly ITeacherRepository teacherRepo;
-        public TeachersController(ITeacherFacade teacherFacade, ITeacherRepository teacherRepo)
+        private readonly IUserRepository userRepo;
+        public TeachersController(ITeacherFacade teacherFacade, ITeacherRepository teacherRepo, IUserRepository userRepo)
         {
             this.teacherFacade = teacherFacade;
             this.teacherRepo = teacherRepo;
+            this.userRepo = userRepo;
         }
         // GET: api/Teachers
         [HttpGet]
@@ -32,9 +34,9 @@ namespace DataService.Api.Controllers
 
         // GET: api/Teachers/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public TeacherDto Get(int id)
         {
-            return "value";
+            return teacherRepo.GetTeachers().First<TeacherDto>(teacher => teacher.TeacherID == id);
         }
         
         // POST: api/Teachers
@@ -53,8 +55,11 @@ namespace DataService.Api.Controllers
         
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public bool Delete(int id)
         {
+            var teacherToDelete = teacherRepo.GetTeachers().First(teacher => teacher.TeacherID == id);
+
+            return userRepo.DeleteUser(teacherToDelete.UserID);
         }
     }
 }

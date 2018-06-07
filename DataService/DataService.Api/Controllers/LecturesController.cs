@@ -51,8 +51,9 @@ namespace DataService.Api.Controllers
         
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public bool Delete(int id)
         {
+            return lectureRepo.DeleteLecture(id);
         }
     }
 }

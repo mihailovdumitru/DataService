@@ -35,9 +35,12 @@ namespace Persistance.Facade.Implementation
                 conn.Open();
                 teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
                 teacherID = teacherRepo.AddTeacher(teacherObj, conn);
-                foreach (var lecture in teacher.Lectures)
+                if (teacher.Lectures != null)
                 {
-                    teacherLecturesRepo.AddTeacherLectures(teacherID, lecture, conn);
+                    foreach (var lecture in teacher.Lectures)
+                    {
+                        teacherLecturesRepo.AddTeacherLectures(teacherID, lecture, conn);
+                    }
                 }
                 if (conn.State == ConnectionState.Open)
                 {
@@ -58,9 +61,12 @@ namespace Persistance.Facade.Implementation
                 teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
                 teacherID = teacherRepo.AddTeacher(teacherObj, conn, teacherID);
                 teacherLecturesRepo.DeleteTeacherLecturesForTeacher(teacherID, conn);
-                foreach (var lectureID in teacher.Lectures)
+                if (teacher.Lectures != null)
                 {
-                    teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
+                    foreach (var lectureID in teacher.Lectures)
+                    {
+                        teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
+                    }
                 }
                 if (conn.State == ConnectionState.Open)
                 {

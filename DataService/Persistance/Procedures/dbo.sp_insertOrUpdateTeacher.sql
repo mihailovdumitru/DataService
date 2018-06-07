@@ -2,21 +2,20 @@
 	@FIRSTNAME nvarchar(50), 
 	@LASTNAME nvarchar(50),
 	@EMAIL nvarchar(50),
-	@TEACHER_ID int
+	@TEACHER_ID int,
+	@USER_ID int
 AS
 IF (NOT EXISTS(SELECT 1 FROM Teacher WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME AND Email=@EMAIL) AND @TEACHER_ID = -1)
 BEGIN
 	SET NOCOUNT ON;
 
-	INSERT INTO Teacher (
-	FirstName, LastName, Email) 
-	VALUES (
-	@FIRSTNAME, @LASTNAME, @EMAIL); 
+	INSERT INTO Teacher (FirstName, LastName, Email, UserID) 
+				VALUES (@FIRSTNAME, @LASTNAME, @EMAIL, @USER_ID); 
 
 	SELECT TeacherID=SCOPE_IDENTITY()
 END
 ELSE 
 	UPDATE Teacher SET FirstName=@FIRSTNAME,LastName=@LASTNAME,Email=@EMAIL WHERE TeacherId = @TEACHER_ID;
-	SELECT TeacherID FROM Teacher WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME AND Email=@EMAIL
-GO
+	UPDATE [User] SET Username = @EMAIL WHERE UserID = @USER_ID;
+	SELECT TeacherID FROM Teacher WHERE FirstName=@FIRSTNAME AND LastName=@LASTNAME AND Email=@EMAIL;
 GO

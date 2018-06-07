@@ -6,3 +6,24 @@ services:
     build:
       context: .
       dockerfile: DataService/Dockerfile
+
+  begintest:
+    image: begintest
+    build:
+      context: .
+      dockerfile: ../BeginTest/Dockerfile
+
+
+  authentication:
+    image: authentication
+    build:
+      context: .
+      dockerfile: Authentication/Dockerfile
+
+
+  authdataservice:
+    image: authdataservice
+    build:
+      context: .
+      dockerfile: AuthDataService/Dockerfile
+

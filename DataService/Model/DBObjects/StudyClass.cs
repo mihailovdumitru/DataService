@@ -8,5 +8,6 @@ namespace Model.DBObjects
     {
         public int ClassID { get; set; }
         public string Name { get; set; }
+        public bool IsValid { get; set; }
     }
 }

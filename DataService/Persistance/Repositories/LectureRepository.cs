@@ -78,5 +78,30 @@ namespace Persistance.Repositories
 
             return lectures;
         }
+
+        public bool DeleteLecture(int lectureID, SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            bool succes = true;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_deleteLecture", conn))
+            {
+                cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (nullConnection)
+                    conn.Open();
+                cmd.ExecuteNonQuery();
+
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return succes;
+        }
     }
 }

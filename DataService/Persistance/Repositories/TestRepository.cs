@@ -43,5 +43,43 @@ namespace Persistance.Repositories
 
             return testID;
         }
+
+        public IEnumerable<Test> GetTests(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            Test test = null;
+            List<Test> tests = new List<Test>();
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_getTests", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        test = new Test
+                        {
+                            TestID = DataUtil.GetDataReaderValue<int>("TestID", reader),
+                            Naming = DataUtil.GetDataReaderValue<string>("Name", reader),
+                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                            LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader)
+                        };
+                        tests.Add(test);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return tests;
+        }
+
     }
 }

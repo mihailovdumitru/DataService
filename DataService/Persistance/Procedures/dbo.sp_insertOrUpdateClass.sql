@@ -1,13 +1,14 @@
 ﻿CREATE PROCEDURE [dbo].[sp_insertOrUpdateClass]
 	@NAME nvarchar(20),
-	@CLASS_ID int
+	@CLASS_ID int,
+	@IS_ACTIVE bit
 AS
 IF (NOT EXISTS(SELECT 1 FROM Class WHERE Name=@NAME)  AND @CLASS_ID = -1)
 BEGIN
 	SET NOCOUNT ON;
 
-	INSERT INTO Class(Name) 
-			     VALUES (@NAME); 
+	INSERT INTO Class(Name,IsActive) 
+			     VALUES (@NAME,1); 
 	SELECT ClassID=SCOPE_IDENTITY()
 END
 ELSE 
