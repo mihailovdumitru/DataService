@@ -14,10 +14,12 @@ namespace BeginTest.Controllers
     public class TestsController : Controller
     {
         private readonly ITestRepository testRepo;
+        private readonly ITestParametersRepository testParamRepo;
 
-        public TestsController(ITestRepository testRepo)
+        public TestsController(ITestRepository testRepo, ITestParametersRepository testParamRepo)
         {
             this.testRepo = testRepo;
+            this.testParamRepo = testParamRepo;
         }
         // GET: api/Tests
         [HttpGet]
@@ -27,7 +29,7 @@ namespace BeginTest.Controllers
         }
 
         // GET: api/Tests/5
-        [HttpGet("{id}", Name = "Get")]
+        [HttpGet("{id}")]
         public string Get(int id)
         {
             return "value";
@@ -35,8 +37,9 @@ namespace BeginTest.Controllers
         
         // POST: api/Tests
         [HttpPost]
-        public void Post([FromBody]string value)
+        public bool Post([FromBody]TestParameters testParams)
         {
+            return testParamRepo.AddTestParameters(testParams);
         }
         
         // PUT: api/Tests/5

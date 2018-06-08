@@ -44,7 +44,7 @@ namespace Test.Controllers
         public ActionResult Post([FromBody]TestModelDto test)
         {
             test.LectureID = 1;
-            test.TeacherID = 1;
+            test.TeacherID = 21;
             int testId = testFacade.AddTestObject(test);
             
 

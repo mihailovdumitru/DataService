@@ -68,5 +68,41 @@ namespace Persistance.Repositories
 
             return succes;
         }
+
+        //public List<StudyClass> GetUser(SqlConnection conn = null)
+        //{
+        //    bool nullConnection = false;
+        //    User user = null;
+        //    List<User> studyClasses = new List<User>();
+
+        //    UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+        //    using (var cmd = new SqlCommand("sp_getUsers", conn))
+        //    {
+        //        cmd.CommandType = CommandType.StoredProcedure;
+
+        //        if (nullConnection)
+        //            conn.Open();
+        //        using (var reader = cmd.ExecuteReader())
+        //        {
+        //            while (reader.Read())
+        //            {
+        //                user = new User
+        //                {
+        //                    d
+        //                    ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
+        //                    Name = DataUtil.GetDataReaderValue<string>("Name", reader)
+        //                };
+        //                studyClasses.Add(studyClass);
+        //            }
+        //        }
+        //        if (conn.State == ConnectionState.Open && nullConnection)
+        //        {
+        //            conn.Close();
+        //        }
+        //    }
+
+        //    return studyClasses;
+        //}
     }
 }
