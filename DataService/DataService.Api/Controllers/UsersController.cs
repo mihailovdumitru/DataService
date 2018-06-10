@@ -19,7 +19,7 @@ namespace DataService.Api.Controllers
         {
             this.userRepo = userRepo;
         }
-        // GET: api/Users
+        //GET: api/Users
         [HttpGet]
         public IEnumerable<string> Get()
         {
@@ -32,7 +32,14 @@ namespace DataService.Api.Controllers
         {
             return "value";
         }
-        
+
+        [HttpGet]
+        [Route("username/{username}")]
+        public User Get(string username)
+        {
+            return userRepo.GetUserByUsername(username);
+        }
+
         // POST: api/Users
         [HttpPost]
         public int Post([FromBody]User user)
