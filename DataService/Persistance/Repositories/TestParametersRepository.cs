@@ -41,5 +41,46 @@ namespace Persistance.Repositories
 
             return succes;
         }
+
+
+        public List<TestParameters> GetTestParameters(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            TestParameters testParams = null;
+            List<TestParameters> testsParams = new List<TestParameters>();
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_getTestParameters", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        testParams = new TestParameters
+                        {
+                            TestID = DataUtil.GetDataReaderValue<int>("TestID", reader),
+                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
+                            Duration = DataUtil.GetDataReaderValue<int>("Duration", reader),
+                            Penalty = DataUtil.GetDataReaderValue<float>("Penalty", reader),
+                            StartTest = DataUtil.GetDataReaderValue<DateTime>("StartTest", reader),
+                            FinishTest = DataUtil.GetDataReaderValue<DateTime>("FinishTest", reader)
+                        };
+                        testsParams.Add(testParams);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return testsParams;
+        }
     }
 }

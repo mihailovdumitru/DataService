@@ -9,5 +9,6 @@ namespace Persistance.Interfaces
     public interface IQuestionRepository
     {
         int AddQuestion(Question test, SqlConnection conn = null);
+        List<Question> GetQuestionsByTestID(int testID, SqlConnection conn = null);
     }
 }

@@ -15,9 +15,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataService.Api", "DataServ
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{4CF67D3B-654A-4625-BF81-A675D639E4A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BeginTest", "..\BeginTest\BeginTest.csproj", "{FDD45A08-6E72-41AA-B32D-E3DDE9DAED4D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BeginTest", "..\BeginTest\BeginTest.csproj", "{FDD45A08-6E72-41AA-B32D-E3DDE9DAED4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthDataService", "AuthDataService\AuthDataService.csproj", "{8A9E1CB1-681A-46DB-968C-59FB6803D008}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthDataService", "AuthDataService\AuthDataService.csproj", "{8A9E1CB1-681A-46DB-968C-59FB6803D008}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StudentTest", "..\StudentTest\StudentTest.csproj", "{63626880-5292-4735-8589-9C8691C8A1AD}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{8A9E1CB1-681A-46DB-968C-59FB6803D008}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8A9E1CB1-681A-46DB-968C-59FB6803D008}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8A9E1CB1-681A-46DB-968C-59FB6803D008}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63626880-5292-4735-8589-9C8691C8A1AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63626880-5292-4735-8589-9C8691C8A1AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63626880-5292-4735-8589-9C8691C8A1AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63626880-5292-4735-8589-9C8691C8A1AD}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

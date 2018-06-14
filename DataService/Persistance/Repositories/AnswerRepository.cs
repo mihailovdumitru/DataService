@@ -40,5 +40,40 @@ namespace Persistance.Repositories
 
             return answerID;
         }
+
+        public List<Answer> GetAnswers(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            Answer answer = null;
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+            List<Answer> answers = new List<Answer>();
+
+            using (var cmd = new SqlCommand("sp_getAnswers", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        answer = new Answer
+                        {
+                            AnswerID = DataUtil.GetDataReaderValue<int>("AnswerID", reader),
+                            Content = DataUtil.GetDataReaderValue<string>("Answer", reader)
+                        };
+                        answers.Add(answer);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return answers;
+        }
     }
 }

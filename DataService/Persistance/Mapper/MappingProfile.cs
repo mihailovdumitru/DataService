@@ -13,7 +13,9 @@ namespace Persistance.Mapper
         {
             CreateMap<TestModelDto, Test>();
             CreateMap<AnswerModelDto, Answer>();
+            CreateMap<Answer, AnswerModelDto>();
             CreateMap<QuestionModelDto, Question>();
+            CreateMap<Test, TestModelDto>();
         }
     }
 }

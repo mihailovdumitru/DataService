@@ -1,4 +1,5 @@
-﻿using Persistance.Interfaces;
+﻿using Model.DBObjects;
+using Persistance.Interfaces;
 using Persistance.Utilities;
 using System;
 using System.Collections.Generic;
@@ -32,6 +33,41 @@ namespace Persistance.Repositories
                     conn.Close();
                 }
             }
+        }
+
+        public List<QuestionWithAnswers> GetQuestionAnswers(SqlConnection conn = null)
+        {
+            bool nullConnection = false;
+            QuestionWithAnswers questionAnswer = null;
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+            List<QuestionWithAnswers> questionsWithAnswers = new List<QuestionWithAnswers>();
+
+            using (var cmd = new SqlCommand("sp_getQuestionAnswers", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        questionAnswer = new QuestionWithAnswers{                          
+                            QuestionID = DataUtil.GetDataReaderValue<int>("QuestionID", reader),
+                            AnswerID = DataUtil.GetDataReaderValue<int>("AnswerID", reader),
+                            Correct = DataUtil.GetDataReaderValue<bool>("Correct", reader)
+                        };
+                        questionsWithAnswers.Add(questionAnswer);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return questionsWithAnswers;
         }
 
     }
