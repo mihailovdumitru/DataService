@@ -7,6 +7,7 @@ namespace Model.DTO
 {
     public class TeacherDto : Teacher
     {
+        // new
         public List<int> Lectures { get; set; }
     }
 }
