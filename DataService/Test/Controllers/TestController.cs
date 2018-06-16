@@ -23,11 +23,18 @@ namespace Test.Controllers
         [HttpPost]
         public ActionResult Post([FromBody]TestModelDto test)
         {
-            test.LectureID = 1;
-            test.TeacherID = 21;
             int testId = testFacade.AddTestObject(test);
             
             return Ok("Succes");
+        }
+
+        // PUT: api/Test/5
+        [HttpPut]
+        public ActionResult Put([FromBody]TestModelDto test)
+        {
+            var id = testFacade.UpdateTest(test);
+
+            return Ok(id);
         }
     }
 }
