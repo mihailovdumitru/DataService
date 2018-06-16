@@ -1,17 +1,14 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class UserRepository: SqlBase, IUserRepository
+    public class UserRepository : SqlBase, IUserRepository
     {
-
         public int AddOrUpdateUser(User user, SqlConnection conn = null, int userID = -1)
         {
             bool nullConnection = false;
@@ -26,8 +23,10 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@USER_ID", userID);
                 cmd.Parameters.AddWithValue("@IS_ACTIVE", user.IsActive);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -35,6 +34,7 @@ namespace Persistance.Repositories
                         userID = DataUtil.GetDataReaderValue<int>("UserID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -54,10 +54,11 @@ namespace Persistance.Repositories
             using (var cmd = new SqlCommand("sp_deleteUser", conn))
             {
                 cmd.Parameters.AddWithValue("@USER_ID", userID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
@@ -69,7 +70,7 @@ namespace Persistance.Repositories
             return succes;
         }
 
-        public User GetUserByUsername(string username,SqlConnection conn = null)
+        public User GetUserByUsername(string username, SqlConnection conn = null)
         {
             bool nullConnection = false;
             User user = null;
@@ -84,6 +85,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -98,6 +100,7 @@ namespace Persistance.Repositories
                         };
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

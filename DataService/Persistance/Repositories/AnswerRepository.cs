@@ -1,11 +1,9 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
@@ -21,10 +19,11 @@ namespace Persistance.Repositories
             using (var cmd = new SqlCommand("sp_insertAnswer", conn))
             {
                 cmd.Parameters.AddWithValue("@ANSWER", answer.Content);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -32,6 +31,7 @@ namespace Persistance.Repositories
                         answerID = DataUtil.GetDataReaderValue<int>("AnswerID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -95,9 +95,11 @@ namespace Persistance.Repositories
                             AnswerID = DataUtil.GetDataReaderValue<int>("AnswerID", reader),
                             Content = DataUtil.GetDataReaderValue<string>("Answer", reader)
                         };
+
                         answers.Add(answer);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

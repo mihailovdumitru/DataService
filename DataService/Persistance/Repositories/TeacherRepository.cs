@@ -2,12 +2,9 @@
 using Model.DTO;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 
 namespace Persistance.Repositories
 {
@@ -27,8 +24,10 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@TEACHER_ID", teacherId);
                 cmd.Parameters.AddWithValue("@USER_ID", teacher.UserID);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -36,6 +35,7 @@ namespace Persistance.Repositories
                         teacherId = DataUtil.GetDataReaderValue<int>("TeacherID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -44,6 +44,7 @@ namespace Persistance.Repositories
 
             return teacherId;
         }
+
         public List<TeacherWithLecturesDto> GetTeachersWithLectures(SqlConnection conn = null)
         {
             bool nullConnection = false;
@@ -60,6 +61,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -82,7 +84,8 @@ namespace Persistance.Repositories
                         };
 
                         teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
-                        if(teacherIndex != -1)
+
+                        if (teacherIndex != -1)
                         {
                             teachers[teacherIndex].Lectures.Add(lecture);
                         }
@@ -93,6 +96,7 @@ namespace Persistance.Repositories
                         }
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -118,6 +122,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -131,9 +136,10 @@ namespace Persistance.Repositories
                             UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
                             Lectures = new List<int>()
                         };
-                        lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
 
+                        lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
                         teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
+
                         if (teacherIndex != -1 && lectureID > 0)
                         {
 
@@ -145,10 +151,12 @@ namespace Persistance.Repositories
                             {
                                 teacher.Lectures.Add(lectureID);
                             }
+
                             teachers.Add(teacher);
                         }
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -157,7 +165,6 @@ namespace Persistance.Repositories
 
             return teachers;
         }
-
 
         public Teacher GetTeacherUserAuth(string email, SqlConnection conn = null)
         {
@@ -173,6 +180,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -187,6 +195,7 @@ namespace Persistance.Repositories
                         };
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -195,8 +204,5 @@ namespace Persistance.Repositories
 
             return teacher;
         }
-
     }
-
-
 }

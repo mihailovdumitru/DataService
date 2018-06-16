@@ -1,11 +1,9 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
@@ -26,8 +24,10 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@STUDENT_ID", studentID);
                 cmd.Parameters.AddWithValue("@USER_ID", student.UserID);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -35,6 +35,7 @@ namespace Persistance.Repositories
                         studentID = DataUtil.GetDataReaderValue<int>("StudentID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -58,6 +59,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -71,9 +73,11 @@ namespace Persistance.Repositories
                             ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
                             UserID = DataUtil.GetDataReaderValue<int>("UserID", reader)
                         };
+
                         students.Add(student);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

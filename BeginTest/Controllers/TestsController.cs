@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Model.DBObjects;
 using Persistance.Interfaces;
@@ -21,6 +17,7 @@ namespace BeginTest.Controllers
             this.testRepo = testRepo;
             this.testParamRepo = testParamRepo;
         }
+
         // GET: api/Tests
         [HttpGet]
         public IEnumerable<Test> Get()
@@ -28,30 +25,11 @@ namespace BeginTest.Controllers
             return testRepo.GetTests();
         }
 
-        // GET: api/Tests/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-        
         // POST: api/Tests
         [HttpPost]
         public bool Post([FromBody]TestParameters testParams)
         {
             return testParamRepo.AddTestParameters(testParams);
-        }
-        
-        // PUT: api/Tests/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
-        }
-        
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

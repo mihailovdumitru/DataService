@@ -5,13 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class TestParametersRepository:SqlBase, ITestParametersRepository
+    public class TestParametersRepository : SqlBase, ITestParametersRepository
     {
-
         public bool AddTestParameters(TestParameters testParam, SqlConnection conn = null)
         {
             bool nullConnection = false;
@@ -27,10 +25,11 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@PENALTY", testParam.Penalty);
                 cmd.Parameters.AddWithValue("@START_TEST", testParam.StartTest);
                 cmd.Parameters.AddWithValue("@FINISH_TEST", testParam.FinishTest);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
@@ -41,7 +40,6 @@ namespace Persistance.Repositories
 
             return succes;
         }
-
 
         public List<TestParameters> GetTestParameters(SqlConnection conn = null)
         {
@@ -57,6 +55,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -71,9 +70,11 @@ namespace Persistance.Repositories
                             StartTest = DataUtil.GetDataReaderValue<DateTime>("StartTest", reader),
                             FinishTest = DataUtil.GetDataReaderValue<DateTime>("FinishTest", reader)
                         };
+
                         testsParams.Add(testParams);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

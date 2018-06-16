@@ -1,15 +1,13 @@
 ﻿using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 using Model.DBObjects;
 
 namespace Persistance.Repositories
 {
-    public class TestRepository: SqlBase, ITestRepository
+    public class TestRepository : SqlBase, ITestRepository
     {
         private static readonly TestRepository _instance = new TestRepository();
 
@@ -26,8 +24,10 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@TEACHER_ID", test.TeacherID);
                 cmd.Parameters.AddWithValue("@LECTURE_ID", test.LectureID);
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -35,6 +35,7 @@ namespace Persistance.Repositories
                         testID = DataUtil.GetDataReaderValue<int>("TestID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -90,6 +91,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -101,9 +103,11 @@ namespace Persistance.Repositories
                             TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
                             LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader)
                         };
+
                         tests.Add(test);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -112,6 +116,5 @@ namespace Persistance.Repositories
 
             return tests;
         }
-
     }
 }

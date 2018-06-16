@@ -4,16 +4,14 @@ using Model.DTO.Test;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 
 namespace Persistance.Facade.Implementation
 {
-    public class TestFacade: SqlBase, ITestFacade
+    public class TestFacade : SqlBase, ITestFacade
     {
         private readonly IMapper mapper;
         private readonly ITestRepository testRepo;
@@ -21,8 +19,8 @@ namespace Persistance.Facade.Implementation
         private readonly IAnswerRespository answerRepo;
         private readonly IQuestionAnswerRespository questionAnswerRepo;
 
-        public TestFacade(IMapper mapper,ITestRepository testRepo,IQuestionRepository questionRepo,
-                          IAnswerRespository answerRepo,IQuestionAnswerRespository questionAnswerRepo)
+        public TestFacade(IMapper mapper, ITestRepository testRepo, IQuestionRepository questionRepo,
+                          IAnswerRespository answerRepo, IQuestionAnswerRespository questionAnswerRepo)
         {
             this.mapper = mapper;
             this.testRepo = testRepo;
@@ -45,6 +43,7 @@ namespace Persistance.Facade.Implementation
                 conn.Open();
                 testObj = mapper.Map<TestModelDto, Test>(test);
                 testId = testRepo.AddTest(testObj, conn);
+
                 if (test.Questions != null)
                 {
                     foreach (var question in test.Questions)
@@ -63,12 +62,13 @@ namespace Persistance.Facade.Implementation
                         }
                     }
                 }
+
                 if (conn.State == ConnectionState.Open)
                 {
                     conn.Close();
                 }
             }
-            
+
             return testId;
         }
 
@@ -124,11 +124,10 @@ namespace Persistance.Facade.Implementation
             using (var conn = new SqlConnection(base.GetConnectionString()))
             {
                 conn.Open();
-                var test = testRepo.GetTests(conn).First(obj => obj.TestID == id) ;
-                testObj = mapper.Map<Test, TestModelDto > (test);
+                var test = testRepo.GetTests(conn).First(obj => obj.TestID == id);
+                testObj = mapper.Map<Test, TestModelDto>(test);
 
-
-                var questions = questionRepo.GetQuestionsByTestID(testObj.TestID,conn);
+                var questions = questionRepo.GetQuestionsByTestID(testObj.TestID, conn);
                 var questionAnswers = questionAnswerRepo.GetQuestionAnswers(conn);
                 var answers = answerRepo.GetAnswers(conn);
 
@@ -137,7 +136,7 @@ namespace Persistance.Facade.Implementation
                 foreach (var question in questions)
                 {
                     questionObj = mapper.Map<Question, QuestionModelDto>(question);
-                    
+
                     var questAnsw = questionAnswers.Where(q => q.QuestionID == question.QuestionID);
                     answersList = new List<AnswerModelDto>();
                     foreach (var qAnsw in questAnsw)

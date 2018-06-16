@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
+﻿using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Model.DTO.Test;
 using Persistance.Facade.Interfaces;
@@ -24,20 +19,7 @@ namespace Test.Controllers
             this.testFacade = testFacade;
         }
 
-        // GET: api/Test
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/Test/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-        
+        // POST: api/Test
         [HttpPost]
         public ActionResult Post([FromBody]TestModelDto test)
         {
@@ -46,21 +28,6 @@ namespace Test.Controllers
             int testId = testFacade.AddTestObject(test);
             
             return Ok("Succes");
-        }
-
-        // PUT: api/Test/5
-        [HttpPut]
-        public ActionResult Put([FromBody]TestModelDto test)
-        {
-            var id = testFacade.UpdateTest(test);
-
-            return Ok(id);
-        }
-        
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
         }
     }
 }

@@ -1,14 +1,11 @@
 ﻿using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class TeacherLecturesRepository : SqlBase,ITeacherLecturesRepository
+    public class TeacherLecturesRepository : SqlBase, ITeacherLecturesRepository
     {
         public void AddTeacherLectures(int teacherID, int lectureID, SqlConnection conn = null)
         {
@@ -20,10 +17,11 @@ namespace Persistance.Repositories
             {
                 cmd.Parameters.AddWithValue("@TEACHER_ID", teacherID);
                 cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
@@ -32,7 +30,6 @@ namespace Persistance.Repositories
                 }
             }
         }
-
 
         public void DeleteTeacherLecturesForTeacher(int teacherID, SqlConnection conn = null)
         {
@@ -43,10 +40,11 @@ namespace Persistance.Repositories
             using (var cmd = new SqlCommand("sp_deleteTeacherLecturesForTeacher", conn))
             {
                 cmd.Parameters.AddWithValue("@TEACHER_ID", teacherID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
