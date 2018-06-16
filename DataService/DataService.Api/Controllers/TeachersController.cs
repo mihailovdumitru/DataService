@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Model.DTO;
 using Persistance.Facade.Interfaces;
@@ -11,6 +12,8 @@ namespace DataService.Api.Controllers
     [Route("api/Teachers")]
     public class TeachersController : Controller
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ITeacherFacade teacherFacade;
         private readonly ITeacherRepository teacherRepo;
         private readonly IUserRepository userRepo;
@@ -26,7 +29,8 @@ namespace DataService.Api.Controllers
         [HttpGet]
         public IEnumerable<TeacherDto> Get()
         {
-            //return teacherRepo.GetTeachersWithLectures();
+            _log.Info("Get all the teachers.");
+
             return teacherRepo.GetTeachers();
         }
 
@@ -34,13 +38,17 @@ namespace DataService.Api.Controllers
         [HttpGet("{id}")]
         public TeacherDto Get(int id)
         {
-            return teacherRepo.GetTeachers().First<TeacherDto>(teacher => teacher.TeacherID == id);
+            _log.Info("Get the teacher. TeacherId: " + id);
+
+            return teacherRepo.GetTeachers().First(teacher => teacher.TeacherID == id);
         }
 
         // POST: api/Teachers
         [HttpPost]
         public int Post([FromBody]TeacherDto teacher)
         {
+            _log.Info("Insert a new teacher: " + teacher.FirstName + " " + teacher.LastName);
+
             return teacherFacade.AddTeacher(teacher);
         }
 
@@ -48,6 +56,8 @@ namespace DataService.Api.Controllers
         [HttpPut("{id}")]
         public int Put(int id, [FromBody]TeacherDto teacher)
         {
+            _log.Info("Update the teacher: " + teacher.FirstName + " " + teacher.LastName);
+
             return teacherFacade.UpdateTeacher(teacher, id);
         }
 
@@ -56,6 +66,8 @@ namespace DataService.Api.Controllers
         public bool Delete(int id)
         {
             var teacherToDelete = teacherRepo.GetTeachers().First(teacher => teacher.TeacherID == id);
+
+            _log.Info("Delete the teacher: " + teacherToDelete.FirstName + " " + teacherToDelete.LastName);
 
             return userRepo.DeleteUser(teacherToDelete.UserID);
         }

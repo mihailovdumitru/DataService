@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using log4net;
 using Model.DBObjects;
 using Model.DTO;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -11,6 +13,8 @@ namespace Persistance.Facade.Implementation
 {
     public class TeacherFacade : SqlBase, ITeacherFacade
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IMapper mapper;
         private readonly ITeacherRepository teacherRepo;
         private readonly ITeacherLecturesRepository teacherLecturesRepo;
@@ -25,25 +29,33 @@ namespace Persistance.Facade.Implementation
         public int AddTeacher(TeacherDto teacher)
         {
             int teacherID = -1;
-            Teacher teacherObj = null;
 
-            using (var conn = new SqlConnection(base.GetConnectionString()))
+            try
             {
-                conn.Open();
-                teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
-                teacherID = teacherRepo.AddTeacher(teacherObj, conn);
-                if (teacher.Lectures != null)
+                Teacher teacherObj = null;
+
+                using (var conn = new SqlConnection(base.GetConnectionString()))
                 {
-                    foreach (var lecture in teacher.Lectures)
+                    conn.Open();
+                    teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
+                    teacherID = teacherRepo.AddTeacher(teacherObj, conn);
+                    if (teacher.Lectures != null)
                     {
-                        teacherLecturesRepo.AddTeacherLectures(teacherID, lecture, conn);
+                        foreach (var lecture in teacher.Lectures)
+                        {
+                            teacherLecturesRepo.AddTeacherLectures(teacherID, lecture, conn);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddTeacher() error. Teacher: " + teacher.FirstName + " " + teacher.LastName, e);
             }
 
             return teacherID;
@@ -51,27 +63,34 @@ namespace Persistance.Facade.Implementation
 
         public int UpdateTeacher(TeacherDto teacher, int teacherID)
         {
-            Teacher teacherObj = null;
-
-            using (var conn = new SqlConnection(base.GetConnectionString()))
+            try
             {
-                conn.Open();
-                teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
-                teacherID = teacherRepo.AddTeacher(teacherObj, conn, teacherID);
-                teacherLecturesRepo.DeleteTeacherLecturesForTeacher(teacherID, conn);
+                Teacher teacherObj = null;
 
-                if (teacher.Lectures != null)
+                using (var conn = new SqlConnection(base.GetConnectionString()))
                 {
-                    foreach (var lectureID in teacher.Lectures)
+                    conn.Open();
+                    teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
+                    teacherID = teacherRepo.AddTeacher(teacherObj, conn, teacherID);
+                    teacherLecturesRepo.DeleteTeacherLecturesForTeacher(teacherID, conn);
+
+                    if (teacher.Lectures != null)
                     {
-                        teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
+                        foreach (var lectureID in teacher.Lectures)
+                        {
+                            teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("UpdateTeacher() error. Teacher: " + teacher.FirstName + " " + teacher.LastName, e);
             }
 
             return teacherID;

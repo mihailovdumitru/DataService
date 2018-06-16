@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using log4net;
 using Model.DBObjects;
 using Model.DTO.Test;
 using Persistance.Facade.Interfaces;
@@ -13,6 +14,8 @@ namespace Persistance.Facade.Implementation
 {
     public class TestFacade : SqlBase, ITestFacade
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly IMapper mapper;
         private readonly ITestRepository testRepo;
         private readonly IQuestionRepository questionRepo;
