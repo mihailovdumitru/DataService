@@ -5,6 +5,7 @@ using Model.DTO.Test;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -35,41 +36,49 @@ namespace Persistance.Facade.Implementation
         public int AddTestObject(TestModelDto test)
         {
             int testId = -1;
-            int questionID;
-            int answerID;
-            Test testObj = null;
-            Question questionObj = null;
-            Answer answerObj = null;
 
-            using (var conn = new SqlConnection(base.GetConnectionString()))
+            try
             {
-                conn.Open();
-                testObj = mapper.Map<TestModelDto, Test>(test);
-                testId = testRepo.AddTest(testObj, conn);
+                int questionID;
+                int answerID;
+                Test testObj = null;
+                Question questionObj = null;
+                Answer answerObj = null;
 
-                if (test.Questions != null)
+                using (var conn = new SqlConnection(base.GetConnectionString()))
                 {
-                    foreach (var question in test.Questions)
+                    conn.Open();
+                    testObj = mapper.Map<TestModelDto, Test>(test);
+                    testId = testRepo.AddTest(testObj, conn);
+
+                    if (test.Questions != null)
                     {
-                        questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
-                        questionObj.TestID = testId;
-                        questionID = questionRepo.AddQuestion(questionObj, conn);
-                        if (question.Answers != null)
+                        foreach (var question in test.Questions)
                         {
-                            foreach (var answer in question.Answers)
+                            questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
+                            questionObj.TestID = testId;
+                            questionID = questionRepo.AddQuestion(questionObj, conn);
+                            if (question.Answers != null)
                             {
-                                answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
-                                answerID = answerRepo.AddAnswer(answerObj, conn);
-                                questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                                foreach (var answer in question.Answers)
+                                {
+                                    answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
+                                    answerID = answerRepo.AddAnswer(answerObj, conn);
+                                    questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                                }
                             }
                         }
                     }
-                }
 
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddTestObject() error. Test: " + test.Naming, e);
             }
 
             return testId;
@@ -78,39 +87,47 @@ namespace Persistance.Facade.Implementation
         public int UpdateTest(TestModelDto test)
         {
             int testId = -1;
-            int questionID;
-            int answerID;
-            Test testObj = null;
-            Question questionObj = null;
-            Answer answerObj = null;
 
-            using (var conn = new SqlConnection(base.GetConnectionString()))
+            try
             {
-                conn.Open();
-                testObj = mapper.Map<TestModelDto, Test>(test);
-                testId = testRepo.UpdateTest(testObj, conn);
-                if (test.Questions != null)
+                int questionID;
+                int answerID;
+                Test testObj = null;
+                Question questionObj = null;
+                Answer answerObj = null;
+
+                using (var conn = new SqlConnection(base.GetConnectionString()))
                 {
-                    foreach (var question in test.Questions)
+                    conn.Open();
+                    testObj = mapper.Map<TestModelDto, Test>(test);
+                    testId = testRepo.UpdateTest(testObj, conn);
+                    if (test.Questions != null)
                     {
-                        questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
-                        questionObj.TestID = testId;
-                        questionID = questionRepo.UpdateQuestion(questionObj, conn);
-                        if (question.Answers != null)
+                        foreach (var question in test.Questions)
                         {
-                            foreach (var answer in question.Answers)
+                            questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
+                            questionObj.TestID = testId;
+                            questionID = questionRepo.UpdateQuestion(questionObj, conn);
+                            if (question.Answers != null)
                             {
-                                answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
-                                answerID = answerRepo.UpdateAnswer(answerObj, conn);
-                                questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                                foreach (var answer in question.Answers)
+                                {
+                                    answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
+                                    answerID = answerRepo.UpdateAnswer(answerObj, conn);
+                                    questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                                }
                             }
                         }
                     }
+                    if (conn.State == ConnectionState.Open)
+                    {
+                        conn.Close();
+                    }
                 }
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("UpdateTest() error. Test: " + test.Naming, e);
             }
 
             return testId;
@@ -119,50 +136,58 @@ namespace Persistance.Facade.Implementation
         public TestModelDto GetTestObject(int id)
         {
             TestModelDto testObj = null;
-            QuestionModelDto questionObj = null;
-            AnswerModelDto answerObj = null;
-            QuestionWithAnswersDto questionWithAnswersObj = null;
-            List<AnswerModelDto> answersList = null;
 
-            using (var conn = new SqlConnection(base.GetConnectionString()))
+            try
             {
-                conn.Open();
-                var test = testRepo.GetTests(conn).First(obj => obj.TestID == id);
-                testObj = mapper.Map<Test, TestModelDto>(test);
+                QuestionModelDto questionObj = null;
+                AnswerModelDto answerObj = null;
+                QuestionWithAnswersDto questionWithAnswersObj = null;
+                List<AnswerModelDto> answersList = null;
 
-                var questions = questionRepo.GetQuestionsByTestID(testObj.TestID, conn);
-                var questionAnswers = questionAnswerRepo.GetQuestionAnswers(conn);
-                var answers = answerRepo.GetAnswers(conn);
-
-                testObj.Questions = new List<QuestionWithAnswersDto>();
-
-                foreach (var question in questions)
+                using (var conn = new SqlConnection(base.GetConnectionString()))
                 {
-                    questionObj = mapper.Map<Question, QuestionModelDto>(question);
+                    conn.Open();
+                    var test = testRepo.GetTests(conn).First(obj => obj.TestID == id);
+                    testObj = mapper.Map<Test, TestModelDto>(test);
 
-                    var questAnsw = questionAnswers.Where(q => q.QuestionID == question.QuestionID);
-                    answersList = new List<AnswerModelDto>();
-                    foreach (var qAnsw in questAnsw)
+                    var questions = questionRepo.GetQuestionsByTestID(testObj.TestID, conn);
+                    var questionAnswers = questionAnswerRepo.GetQuestionAnswers(conn);
+                    var answers = answerRepo.GetAnswers(conn);
+
+                    testObj.Questions = new List<QuestionWithAnswersDto>();
+
+                    foreach (var question in questions)
                     {
-                        var answer = answers.First(x => x.AnswerID == qAnsw.AnswerID);
-                        answerObj = mapper.Map<Answer, AnswerModelDto>(answer);
-                        answerObj.Correct = qAnsw.Correct;
-                        answersList.Add(answerObj);
+                        questionObj = mapper.Map<Question, QuestionModelDto>(question);
+
+                        var questAnsw = questionAnswers.Where(q => q.QuestionID == question.QuestionID);
+                        answersList = new List<AnswerModelDto>();
+                        foreach (var qAnsw in questAnsw)
+                        {
+                            var answer = answers.First(x => x.AnswerID == qAnsw.AnswerID);
+                            answerObj = mapper.Map<Answer, AnswerModelDto>(answer);
+                            answerObj.Correct = qAnsw.Correct;
+                            answersList.Add(answerObj);
+                        }
+
+                        questionWithAnswersObj = new QuestionWithAnswersDto()
+                        {
+                            Question = questionObj,
+                            Answers = answersList
+                        };
+
+                        testObj.Questions.Add(questionWithAnswersObj);
                     }
 
-                    questionWithAnswersObj = new QuestionWithAnswersDto()
+                    if (conn.State == ConnectionState.Open)
                     {
-                        Question = questionObj,
-                        Answers = answersList
-                    };
-
-                    testObj.Questions.Add(questionWithAnswersObj);
+                        conn.Close();
+                    }
                 }
-
-                if (conn.State == ConnectionState.Open)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetTestObject() error. Test: " + testObj.Naming, e);
             }
 
             return testObj;

@@ -1,6 +1,8 @@
-﻿using Model.DBObjects;
+﻿using log4net;
+using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,36 +11,45 @@ namespace Persistance.Repositories
 {
     public class UserRepository : SqlBase, IUserRepository
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public int AddOrUpdateUser(User user, SqlConnection conn = null, int userID = -1)
         {
-            bool nullConnection = false;
-
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_insertOrUpdateUser", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@USERNAME", user.Username);
-                cmd.Parameters.AddWithValue("@PASSWORD", user.Password);
-                cmd.Parameters.AddWithValue("@ROLE", user.Role);
-                cmd.Parameters.AddWithValue("@USER_ID", userID);
-                cmd.Parameters.AddWithValue("@IS_ACTIVE", user.IsActive);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_insertOrUpdateUser", conn))
                 {
-                    while (reader.Read())
+                    cmd.Parameters.AddWithValue("@USERNAME", user.Username);
+                    cmd.Parameters.AddWithValue("@PASSWORD", user.Password);
+                    cmd.Parameters.AddWithValue("@ROLE", user.Role);
+                    cmd.Parameters.AddWithValue("@USER_ID", userID);
+                    cmd.Parameters.AddWithValue("@IS_ACTIVE", user.IsActive);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        userID = DataUtil.GetDataReaderValue<int>("UserID", reader);
+                        while (reader.Read())
+                        {
+                            userID = DataUtil.GetDataReaderValue<int>("UserID", reader);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddOrUpdateUser() error. UserName: " + user.Username, e);
             }
 
             return userID;
@@ -46,25 +57,33 @@ namespace Persistance.Repositories
 
         public bool DeleteUser(int userID, SqlConnection conn = null)
         {
-            bool nullConnection = false;
             bool succes = true;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_deleteUser", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@USER_ID", userID);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                cmd.ExecuteNonQuery();
-
-                if (conn.State == ConnectionState.Open && nullConnection)
+                using (var cmd = new SqlCommand("sp_deleteUser", conn))
                 {
-                    conn.Close();
+                    cmd.Parameters.AddWithValue("@USER_ID", userID);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("DeleteUser() error. UserId: " + userID, e);
             }
 
             return succes;
@@ -72,39 +91,47 @@ namespace Persistance.Repositories
 
         public User GetUserByUsername(string username, SqlConnection conn = null)
         {
-            bool nullConnection = false;
             User user = null;
-            List<User> studyClasses = new List<User>();
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getUserByEmail", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@USERNAME", username);
+                bool nullConnection = false;
+                List<User> studyClasses = new List<User>();
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getUserByEmail", conn))
                 {
-                    while (reader.Read())
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@USERNAME", username);
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        user = new User
+                        while (reader.Read())
                         {
-                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
-                            Username = DataUtil.GetDataReaderValue<string>("Username", reader),
-                            Password = DataUtil.GetDataReaderValue<string>("Password", reader),
-                            IsActive = DataUtil.GetDataReaderValue<bool>("IsActive", reader),
-                            Role = DataUtil.GetDataReaderValue<string>("Role", reader)
-                        };
+                            user = new User
+                            {
+                                UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
+                                Username = DataUtil.GetDataReaderValue<string>("Username", reader),
+                                Password = DataUtil.GetDataReaderValue<string>("Password", reader),
+                                IsActive = DataUtil.GetDataReaderValue<bool>("IsActive", reader),
+                                Role = DataUtil.GetDataReaderValue<string>("Role", reader)
+                            };
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetUserByUsername() error. Username: " + user.Username, e);
             }
 
             return user;

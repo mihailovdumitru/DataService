@@ -1,7 +1,9 @@
-﻿using Model.DBObjects;
+﻿using log4net;
+using Model.DBObjects;
 using Model.DTO;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -10,36 +12,45 @@ namespace Persistance.Repositories
 {
     public class TeacherRepository : SqlBase, ITeacherRepository
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public int AddTeacher(Teacher teacher, SqlConnection conn = null, int teacherId = -1)
         {
-            bool nullConnection = false;
-
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_insertOrUpdateTeacher", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@FIRSTNAME", teacher.FirstName);
-                cmd.Parameters.AddWithValue("@LASTNAME", teacher.LastName);
-                cmd.Parameters.AddWithValue("@EMAIL", teacher.Email);
-                cmd.Parameters.AddWithValue("@TEACHER_ID", teacherId);
-                cmd.Parameters.AddWithValue("@USER_ID", teacher.UserID);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_insertOrUpdateTeacher", conn))
                 {
-                    while (reader.Read())
+                    cmd.Parameters.AddWithValue("@FIRSTNAME", teacher.FirstName);
+                    cmd.Parameters.AddWithValue("@LASTNAME", teacher.LastName);
+                    cmd.Parameters.AddWithValue("@EMAIL", teacher.Email);
+                    cmd.Parameters.AddWithValue("@TEACHER_ID", teacherId);
+                    cmd.Parameters.AddWithValue("@USER_ID", teacher.UserID);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        teacherId = DataUtil.GetDataReaderValue<int>("TeacherID", reader);
+                        while (reader.Read())
+                        {
+                            teacherId = DataUtil.GetDataReaderValue<int>("TeacherID", reader);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddTeacher() error. Teacher: " + teacher.FirstName + " " + teacher.LastName, e);
             }
 
             return teacherId;
@@ -47,60 +58,68 @@ namespace Persistance.Repositories
 
         public List<TeacherWithLecturesDto> GetTeachersWithLectures(SqlConnection conn = null)
         {
-            bool nullConnection = false;
-            TeacherWithLecturesDto teacher = null;
             List<TeacherWithLecturesDto> teachers = new List<TeacherWithLecturesDto>();
-            Lecture lecture = null;
-            int teacherIndex = -1;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getTeachersWithLectures", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
+                TeacherWithLecturesDto teacher = null;
+                Lecture lecture = null;
+                int teacherIndex = -1;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getTeachersWithLectures", conn))
                 {
-                    while (reader.Read())
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        teacher = new TeacherWithLecturesDto
+                        while (reader.Read())
                         {
-                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
-                            FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
-                            LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
-                            Email = DataUtil.GetDataReaderValue<string>("Email", reader),
-                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
-                            Lectures = new List<Lecture>()
-                        };
+                            teacher = new TeacherWithLecturesDto
+                            {
+                                TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                                FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
+                                LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
+                                Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                                UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
+                                Lectures = new List<Lecture>()
+                            };
 
-                        lecture = new Lecture
-                        {
-                            LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader),
-                            Name = DataUtil.GetDataReaderValue<string>("Name", reader),
-                            YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
-                        };
+                            lecture = new Lecture
+                            {
+                                LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader),
+                                Name = DataUtil.GetDataReaderValue<string>("Name", reader),
+                                YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
+                            };
 
-                        teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
+                            teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
 
-                        if (teacherIndex != -1)
-                        {
-                            teachers[teacherIndex].Lectures.Add(lecture);
-                        }
-                        else
-                        {
-                            teacher.Lectures.Add(lecture);
-                            teachers.Add(teacher);
+                            if (teacherIndex != -1)
+                            {
+                                teachers[teacherIndex].Lectures.Add(lecture);
+                            }
+                            else
+                            {
+                                teacher.Lectures.Add(lecture);
+                                teachers.Add(teacher);
+                            }
                         }
                     }
-                }
 
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetTeachersWithLectures() error.", e);
             }
 
             return teachers;
@@ -108,59 +127,67 @@ namespace Persistance.Repositories
 
         public List<TeacherDto> GetTeachers(SqlConnection conn = null)
         {
-            bool nullConnection = false;
-            TeacherDto teacher = null;
             List<TeacherDto> teachers = new List<TeacherDto>();
-            int teacherIndex = 0;
-            int lectureID = 0;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getTeachersWithLectures", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
+                TeacherDto teacher = null;
+                int teacherIndex = 0;
+                int lectureID = 0;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getTeachersWithLectures", conn))
                 {
-                    while (reader.Read())
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        teacher = new TeacherDto()
+                        while (reader.Read())
                         {
-                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
-                            FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
-                            LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
-                            Email = DataUtil.GetDataReaderValue<string>("Email", reader),
-                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
-                            Lectures = new List<int>()
-                        };
-
-                        lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
-                        teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
-
-                        if (teacherIndex != -1 && lectureID > 0)
-                        {
-
-                            teachers[teacherIndex].Lectures.Add(lectureID);
-                        }
-                        else
-                        {
-                            if (lectureID > 0)
+                            teacher = new TeacherDto()
                             {
-                                teacher.Lectures.Add(lectureID);
-                            }
+                                TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                                FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
+                                LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
+                                Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                                UserID = DataUtil.GetDataReaderValue<int>("UserID", reader),
+                                Lectures = new List<int>()
+                            };
 
-                            teachers.Add(teacher);
+                            lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
+                            teacherIndex = teachers.FindIndex(teacherObj => teacherObj.TeacherID == teacher.TeacherID);
+
+                            if (teacherIndex != -1 && lectureID > 0)
+                            {
+
+                                teachers[teacherIndex].Lectures.Add(lectureID);
+                            }
+                            else
+                            {
+                                if (lectureID > 0)
+                                {
+                                    teacher.Lectures.Add(lectureID);
+                                }
+
+                                teachers.Add(teacher);
+                            }
                         }
                     }
-                }
 
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetTeachers() error.", e);
             }
 
             return teachers;
@@ -168,38 +195,46 @@ namespace Persistance.Repositories
 
         public Teacher GetTeacherUserAuth(string email, SqlConnection conn = null)
         {
-            bool nullConnection = false;
             Teacher teacher = null;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getTeacherUserByEmail", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@EMAIL", email);
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getTeacherUserByEmail", conn))
                 {
-                    while (reader.Read())
+                    cmd.CommandType = CommandType.StoredProcedure;
+                    cmd.Parameters.AddWithValue("@EMAIL", email);
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        teacher = new Teacher()
+                        while (reader.Read())
                         {
-                            TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
-                            FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
-                            LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
-                            Email = DataUtil.GetDataReaderValue<string>("Email", reader),
-                            UserID = DataUtil.GetDataReaderValue<int>("UserID", reader)
-                        };
+                            teacher = new Teacher()
+                            {
+                                TeacherID = DataUtil.GetDataReaderValue<int>("TeacherID", reader),
+                                FirstName = DataUtil.GetDataReaderValue<string>("FirstName", reader),
+                                LastName = DataUtil.GetDataReaderValue<string>("LastName", reader),
+                                Email = DataUtil.GetDataReaderValue<string>("Email", reader),
+                                UserID = DataUtil.GetDataReaderValue<int>("UserID", reader)
+                            };
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetTeacherUserAuth() error. Teacher: " + teacher.FirstName + " " + teacher.LastName, e);
             }
 
             return teacher;

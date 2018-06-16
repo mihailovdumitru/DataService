@@ -1,6 +1,8 @@
-﻿using Model.DBObjects;
+﻿using log4net;
+using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,34 +11,43 @@ namespace Persistance.Repositories
 {
     public class ClassRepository : SqlBase, IClassRepository
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         public int AddOrUpdateClass(StudyClass studyClass, SqlConnection conn = null, int classID = -1)
         {
-            bool nullConnection = false;
-
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_insertOrUpdateClass", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@NAME", studyClass.Name);
-                cmd.Parameters.AddWithValue("@CLASS_ID", classID);
-                cmd.Parameters.AddWithValue("@IS_ACTIVE", studyClass.IsValid);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_insertOrUpdateClass", conn))
                 {
-                    while (reader.Read())
+                    cmd.Parameters.AddWithValue("@NAME", studyClass.Name);
+                    cmd.Parameters.AddWithValue("@CLASS_ID", classID);
+                    cmd.Parameters.AddWithValue("@IS_ACTIVE", studyClass.IsValid);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        classID = DataUtil.GetDataReaderValue<int>("ClassID", reader);
+                        while (reader.Read())
+                        {
+                            classID = DataUtil.GetDataReaderValue<int>("ClassID", reader);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddOrUpdateClass() error. Class: " + studyClass.Name, e);
             }
 
             return classID;
@@ -44,37 +55,45 @@ namespace Persistance.Repositories
 
         public List<StudyClass> GetClasses(SqlConnection conn = null)
         {
-            bool nullConnection = false;
-            StudyClass studyClass = null;
             List<StudyClass> studyClasses = new List<StudyClass>();
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getClasses", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
+                StudyClass studyClass = null;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getClasses", conn))
                 {
-                    while (reader.Read())
-                    {
-                        studyClass = new StudyClass
-                        {
-                            ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
-                            Name = DataUtil.GetDataReaderValue<string>("Name", reader)
-                        };
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                        studyClasses.Add(studyClass);
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            studyClass = new StudyClass
+                            {
+                                ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
+                                Name = DataUtil.GetDataReaderValue<string>("Name", reader)
+                            };
+
+                            studyClasses.Add(studyClass);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetClasses() error. ", e);
             }
 
             return studyClasses;
@@ -82,25 +101,33 @@ namespace Persistance.Repositories
 
         public bool DeleteClass(int studyClassID, SqlConnection conn = null)
         {
-            bool nullConnection = false;
             bool succes = true;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_deleteClass", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@CLASS_ID", studyClassID);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                cmd.ExecuteNonQuery();
-
-                if (conn.State == ConnectionState.Open && nullConnection)
+                using (var cmd = new SqlCommand("sp_deleteClass", conn))
                 {
-                    conn.Close();
+                    cmd.Parameters.AddWithValue("@CLASS_ID", studyClassID);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("DeleteClass() error. ClassId: " + studyClassID, e);
             }
 
             return succes;
