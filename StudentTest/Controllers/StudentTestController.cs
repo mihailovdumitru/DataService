@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Model.DBObjects;
 using Model.DTO.Test;
@@ -12,6 +13,8 @@ namespace StudentTest.Controllers
     //[Route("api/[controller]")]
     public class StudentTestController : Controller
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ITestFacade testFacade;
         private readonly ITestParametersRepository testParamRepo;
         private readonly ITestResultsRepository testResultsRepo;
@@ -27,12 +30,16 @@ namespace StudentTest.Controllers
         [HttpGet("{id}")]
         public TestModelDto GetTest(int id)
         {
+            _log.Info("Get the test. TestId: " + id);
+
             return testFacade.GetTestObject(id);
         }
 
         [HttpGet]
         public List<TestParameters> GetTestsParameters()
         {
+            _log.Info("Get test parameters.");
+
             return testParamRepo.GetTestParameters();
         }
 
@@ -40,12 +47,16 @@ namespace StudentTest.Controllers
         [HttpPost]
         public bool TestResults([FromBody]TestResults testResults)
         {
+            _log.Info("Insert test results.");
+
             return testResultsRepo.AddTestResults(testResults);
         }
 
         [HttpGet]
         public List<TestResults> TestResults()
         {
+            _log.Info("Get test results.");
+
             return testResultsRepo.GetTestsResults();
         }
     }

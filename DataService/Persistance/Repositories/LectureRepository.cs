@@ -1,6 +1,8 @@
-﻿using Model.DBObjects;
+﻿using log4net;
+using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,36 +11,45 @@ namespace Persistance.Repositories
 {
     public class LectureRepository : SqlBase, ILectureRepository
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private static readonly LectureRepository _instance = new LectureRepository();
 
         public int AddOrUpdate(Lecture lecture, SqlConnection conn = null, int lectureID = -1)
         {
-            bool nullConnection = false;
-
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_insertOrUpdateLecture", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@NAME", lecture.Name);
-                cmd.Parameters.AddWithValue("@YEAR_OF_STUDY", lecture.YearOfStudy);
-                cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_insertOrUpdateLecture", conn))
                 {
-                    while (reader.Read())
+                    cmd.Parameters.AddWithValue("@NAME", lecture.Name);
+                    cmd.Parameters.AddWithValue("@YEAR_OF_STUDY", lecture.YearOfStudy);
+                    cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
                     {
-                        lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
+                        while (reader.Read())
+                        {
+                            lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("AddOrUpdate() error. Lecture: " + lecture.Name, e);
             }
 
             return lectureID;
@@ -46,38 +57,46 @@ namespace Persistance.Repositories
 
         public List<Lecture> GetLectures(SqlConnection conn = null)
         {
-            bool nullConnection = false;
-            Lecture lecture = null;
             List<Lecture> lectures = new List<Lecture>();
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_getLectures", conn))
+            try
             {
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
+                Lecture lecture = null;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                using (var reader = cmd.ExecuteReader())
+                using (var cmd = new SqlCommand("sp_getLectures", conn))
                 {
-                    while (reader.Read())
-                    {
-                        lecture = new Lecture
-                        {
-                            LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader),
-                            Name = DataUtil.GetDataReaderValue<string>("Name", reader),
-                            YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
-                        };
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                        lectures.Add(lecture);
+                    if (nullConnection)
+                        conn.Open();
+
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            lecture = new Lecture
+                            {
+                                LectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader),
+                                Name = DataUtil.GetDataReaderValue<string>("Name", reader),
+                                YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
+                            };
+
+                            lectures.Add(lecture);
+                        }
+                    }
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
                     }
                 }
-
-                if (conn.State == ConnectionState.Open && nullConnection)
-                {
-                    conn.Close();
-                }
+            }
+            catch (Exception e)
+            {
+                _log.Error("GetLectures() error.", e);
             }
 
             return lectures;
@@ -85,25 +104,33 @@ namespace Persistance.Repositories
 
         public bool DeleteLecture(int lectureID, SqlConnection conn = null)
         {
-            bool nullConnection = false;
             bool succes = true;
 
-            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
-
-            using (var cmd = new SqlCommand("sp_deleteLecture", conn))
+            try
             {
-                cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
-                cmd.CommandType = CommandType.StoredProcedure;
+                bool nullConnection = false;
 
-                if (nullConnection)
-                    conn.Open();
+                UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
 
-                cmd.ExecuteNonQuery();
-
-                if (conn.State == ConnectionState.Open && nullConnection)
+                using (var cmd = new SqlCommand("sp_deleteLecture", conn))
                 {
-                    conn.Close();
+                    cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
+                    cmd.CommandType = CommandType.StoredProcedure;
+
+                    if (nullConnection)
+                        conn.Open();
+
+                    cmd.ExecuteNonQuery();
+
+                    if (conn.State == ConnectionState.Open && nullConnection)
+                    {
+                        conn.Close();
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                _log.Error("DeleteLecture() error. LectureId: " + lectureID, e);
             }
 
             return succes;

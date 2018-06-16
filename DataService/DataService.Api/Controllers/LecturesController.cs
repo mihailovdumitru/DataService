@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Model.DBObjects;
 using Persistance.Interfaces;
@@ -9,6 +10,8 @@ namespace DataService.Api.Controllers
     [Route("api/Lectures")]
     public class LecturesController : Controller
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ILectureRepository lectureRepo;
 
         public LecturesController(ILectureRepository lectureRepo)
@@ -20,6 +23,8 @@ namespace DataService.Api.Controllers
         [HttpGet]
         public IEnumerable<Lecture> Get()
         {
+            _log.Info("Get all the lectures.");
+
             return lectureRepo.GetLectures();
         }
 
@@ -27,6 +32,8 @@ namespace DataService.Api.Controllers
         [HttpPost]
         public int Post([FromBody]Lecture lecture)
         {
+            _log.Info("Insert a new lecture: " + lecture.Name);
+
             return lectureRepo.AddOrUpdate(lecture);
         }
 
@@ -34,6 +41,8 @@ namespace DataService.Api.Controllers
         [HttpPut("{id}")]
         public int Put(int id, [FromBody]Lecture lecture)
         {
+            _log.Info("Update the lecture: " + lecture.Name);
+
             return lectureRepo.AddOrUpdate(lecture, null, id);
         }
 
@@ -41,6 +50,8 @@ namespace DataService.Api.Controllers
         [HttpDelete("{id}")]
         public bool Delete(int id)
         {
+            _log.Info("Delete the lecture. LectureId: " + id);
+
             return lectureRepo.DeleteLecture(id);
         }
     }

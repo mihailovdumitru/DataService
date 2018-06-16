@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using log4net;
 using Microsoft.AspNetCore.Mvc;
 using Model.DBObjects;
 using Persistance.Interfaces;
@@ -9,6 +10,8 @@ namespace BeginTest.Controllers
     [Route("api/Tests")]
     public class TestsController : Controller
     {
+        private static readonly ILog _log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
         private readonly ITestRepository testRepo;
         private readonly ITestParametersRepository testParamRepo;
 
@@ -22,6 +25,8 @@ namespace BeginTest.Controllers
         [HttpGet]
         public IEnumerable<Test> Get()
         {
+            _log.Info("Get the tests.");
+
             return testRepo.GetTests();
         }
 
@@ -29,6 +34,8 @@ namespace BeginTest.Controllers
         [HttpPost]
         public bool Post([FromBody]TestParameters testParams)
         {
+            _log.Info("Add test parameters.");
+
             return testParamRepo.AddTestParameters(testParams);
         }
     }

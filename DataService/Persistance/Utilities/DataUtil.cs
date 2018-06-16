@@ -40,7 +40,7 @@ namespace Persistance.Utilities
 
             if (conversionType.IsEnum)
             {
-                return System.Enum.Parse(conversionType, value.ToString(), true);
+                return Enum.Parse(conversionType, value.ToString(), true);
             }
             else
             {
