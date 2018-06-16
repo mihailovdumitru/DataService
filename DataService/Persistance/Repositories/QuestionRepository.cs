@@ -1,17 +1,14 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class QuestionRepository: SqlBase, IQuestionRepository
+    public class QuestionRepository : SqlBase, IQuestionRepository
     {
-
         public int AddQuestion(Question question, SqlConnection conn = null)
         {
             int questionID = -1;
@@ -36,6 +33,7 @@ namespace Persistance.Repositories
                         questionID = DataUtil.GetDataReaderValue<int>("QuestionID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -71,9 +69,11 @@ namespace Persistance.Repositories
                             Points = DataUtil.GetDataReaderValue<int>("Points", reader),
                             TestID = DataUtil.GetDataReaderValue<int>("TestID", reader)
                         };
+
                         questions.Add(question);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

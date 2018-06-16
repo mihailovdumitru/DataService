@@ -1,11 +1,9 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
@@ -22,10 +20,11 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@NAME", studyClass.Name);
                 cmd.Parameters.AddWithValue("@CLASS_ID", classID);
                 cmd.Parameters.AddWithValue("@IS_ACTIVE", studyClass.IsValid);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -33,6 +32,7 @@ namespace Persistance.Repositories
                         classID = DataUtil.GetDataReaderValue<int>("ClassID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -56,6 +56,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -65,9 +66,11 @@ namespace Persistance.Repositories
                             ClassID = DataUtil.GetDataReaderValue<int>("ClassID", reader),
                             Name = DataUtil.GetDataReaderValue<string>("Name", reader)
                         };
+
                         studyClasses.Add(studyClass);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -87,10 +90,11 @@ namespace Persistance.Repositories
             using (var cmd = new SqlCommand("sp_deleteClass", conn))
             {
                 cmd.Parameters.AddWithValue("@CLASS_ID", studyClassID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)

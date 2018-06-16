@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Model.DBObjects;
 using Persistance.Interfaces;
@@ -21,6 +18,7 @@ namespace DataService.Api.Controllers
             this.studentRepo = studentRepo;
             this.userRepo = userRepo;
         }
+
         // GET: api/Students
         [HttpGet]
         public IEnumerable<Student> Get()
@@ -28,27 +26,20 @@ namespace DataService.Api.Controllers
             return studentRepo.GetStudents();
         }
 
-        // GET: api/Students/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-        
         // POST: api/Students
         [HttpPost]
         public int Post([FromBody]Student student)
         {
             return studentRepo.AddOrUpdateStudent(student);
         }
-        
+
         // PUT: api/Students/5
         [HttpPut("{id}")]
         public int Put(int id, [FromBody]Student student)
         {
             return studentRepo.AddOrUpdateStudent(student, null, id);
         }
-        
+
         // DELETE: api/ApiWithActions/5
         [HttpDelete("{id}")]
         public bool Delete(int id)
@@ -56,7 +47,6 @@ namespace DataService.Api.Controllers
             var studentToDelete = studentRepo.GetStudents().First<Student>(student => student.StudentID == id);
 
             return userRepo.DeleteUser(studentToDelete.UserID);
-
         }
     }
 }

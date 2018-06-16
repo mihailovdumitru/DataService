@@ -4,11 +4,8 @@ using Model.DTO;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Facade.Implementation
 {
@@ -42,6 +39,7 @@ namespace Persistance.Facade.Implementation
                         teacherLecturesRepo.AddTeacherLectures(teacherID, lecture, conn);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open)
                 {
                     conn.Close();
@@ -61,6 +59,7 @@ namespace Persistance.Facade.Implementation
                 teacherObj = mapper.Map<TeacherDto, Teacher>(teacher);
                 teacherID = teacherRepo.AddTeacher(teacherObj, conn, teacherID);
                 teacherLecturesRepo.DeleteTeacherLecturesForTeacher(teacherID, conn);
+
                 if (teacher.Lectures != null)
                 {
                     foreach (var lectureID in teacher.Lectures)
@@ -68,6 +67,7 @@ namespace Persistance.Facade.Implementation
                         teacherLecturesRepo.AddTeacherLectures(teacherID, lectureID, conn);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open)
                 {
                     conn.Close();

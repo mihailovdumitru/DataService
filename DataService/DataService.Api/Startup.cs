@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Persistance.Facade.Implementation;
 using Persistance.Facade.Interfaces;
 using Persistance.Interfaces;
@@ -38,12 +32,6 @@ namespace DataService.Api
                        .AllowAnyMethod()
                        .AllowAnyHeader();
             }));
-
-            /*services.AddCors(options =>
-            {
-                options.AddPolicy("AllowSpecificOrigin",
-                    builder => builder.WithOrigins("http://localhost:8080"));
-            });*/
 
             services.Configure<MvcOptions>(options =>
             {

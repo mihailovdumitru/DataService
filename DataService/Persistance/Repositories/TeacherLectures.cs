@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Persistance.Repositories
+﻿namespace Persistance.Repositories
 {
     public class TeacherLectures
     {

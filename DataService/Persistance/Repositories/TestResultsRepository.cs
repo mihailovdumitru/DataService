@@ -5,11 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class TestResultsRepository: SqlBase, ITestResultsRepository
+    public class TestResultsRepository : SqlBase, ITestResultsRepository
     {
         public bool AddTestResults(TestResults testResults, SqlConnection conn = null)
         {
@@ -29,10 +28,11 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@NR_OF_CORRECT_ANSWERS", testResults.NrOfCorrectAnswers);
                 cmd.Parameters.AddWithValue("@NR_OF_WRONG_ANSWERS", testResults.NrOfWrongAnswers);
                 cmd.Parameters.AddWithValue("@NR_OF_UNFILLED_ANSWERS", testResults.NrOfUnfilledAnswers);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
@@ -58,6 +58,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -74,9 +75,11 @@ namespace Persistance.Repositories
                             NrOfWrongAnswers = DataUtil.GetDataReaderValue<int>("NrOfWrongAnswers", reader),
                             NrOfUnfilledAnswers = DataUtil.GetDataReaderValue<int>("NrOfUnfilledAnswers", reader)
                         };
+
                         testsResults.Add(testResults);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();

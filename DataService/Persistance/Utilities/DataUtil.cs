@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
-using System.Text;
 
 namespace Persistance.Utilities
 {
     public class DataUtil
     {
-
         public static T GetDataReaderValue<T>(string keyName, IDataReader reader)
         {
             return GetDataReaderValue<T>(reader.GetOrdinal(keyName), reader);
@@ -35,11 +32,11 @@ namespace Persistance.Utilities
                 if (value == null)
                 {
                     return null;
-                } 
+                }
 
                 NullableConverter nullableConverter = new NullableConverter(conversionType);
                 conversionType = nullableConverter.UnderlyingType;
-            } 
+            }
 
             if (conversionType.IsEnum)
             {

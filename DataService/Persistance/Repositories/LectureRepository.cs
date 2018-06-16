@@ -1,17 +1,16 @@
 ﻿using Model.DBObjects;
 using Persistance.Interfaces;
 using Persistance.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Text;
 
 namespace Persistance.Repositories
 {
-    public class LectureRepository: SqlBase, ILectureRepository
+    public class LectureRepository : SqlBase, ILectureRepository
     {
         private static readonly LectureRepository _instance = new LectureRepository();
+
         public int AddOrUpdate(Lecture lecture, SqlConnection conn = null, int lectureID = -1)
         {
             bool nullConnection = false;
@@ -23,10 +22,11 @@ namespace Persistance.Repositories
                 cmd.Parameters.AddWithValue("@NAME", lecture.Name);
                 cmd.Parameters.AddWithValue("@YEAR_OF_STUDY", lecture.YearOfStudy);
                 cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -34,6 +34,7 @@ namespace Persistance.Repositories
                         lectureID = DataUtil.GetDataReaderValue<int>("LectureID", reader);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -57,6 +58,7 @@ namespace Persistance.Repositories
 
                 if (nullConnection)
                     conn.Open();
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -67,9 +69,11 @@ namespace Persistance.Repositories
                             Name = DataUtil.GetDataReaderValue<string>("Name", reader),
                             YearOfStudy = DataUtil.GetDataReaderValue<int>("YearOfStudy", reader)
                         };
+
                         lectures.Add(lecture);
                     }
                 }
+
                 if (conn.State == ConnectionState.Open && nullConnection)
                 {
                     conn.Close();
@@ -89,10 +93,11 @@ namespace Persistance.Repositories
             using (var cmd = new SqlCommand("sp_deleteLecture", conn))
             {
                 cmd.Parameters.AddWithValue("@LECTURE_ID", lectureID);
-
                 cmd.CommandType = CommandType.StoredProcedure;
+
                 if (nullConnection)
                     conn.Open();
+
                 cmd.ExecuteNonQuery();
 
                 if (conn.State == ConnectionState.Open && nullConnection)
