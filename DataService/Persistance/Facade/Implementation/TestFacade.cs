@@ -58,7 +58,7 @@ namespace Persistance.Facade.Implementation
                             {
                                 answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
                                 answerID = answerRepo.AddAnswer(answerObj, conn);
-                                questionAnswerRepo.AddQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                                questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
                             }
                         }
                     }
@@ -69,6 +69,47 @@ namespace Persistance.Facade.Implementation
                 }
             }
             
+            return testId;
+        }
+
+        public int UpdateTest(TestModelDto test)
+        {
+            int testId = -1;
+            int questionID;
+            int answerID;
+            Test testObj = null;
+            Question questionObj = null;
+            Answer answerObj = null;
+
+            using (var conn = new SqlConnection(base.GetConnectionString()))
+            {
+                conn.Open();
+                testObj = mapper.Map<TestModelDto, Test>(test);
+                testId = testRepo.UpdateTest(testObj, conn);
+                if (test.Questions != null)
+                {
+                    foreach (var question in test.Questions)
+                    {
+                        questionObj = mapper.Map<QuestionModelDto, Question>(question.Question);
+                        questionObj.TestID = testId;
+                        questionID = questionRepo.UpdateQuestion(questionObj, conn);
+                        if (question.Answers != null)
+                        {
+                            foreach (var answer in question.Answers)
+                            {
+                                answerObj = mapper.Map<AnswerModelDto, Answer>(answer);
+                                answerID = answerRepo.UpdateAnswer(answerObj, conn);
+                                questionAnswerRepo.AddOrUpdateQuestionAnswer(questionID, answerID, answer.Correct, conn);
+                            }
+                        }
+                    }
+                }
+                if (conn.State == ConnectionState.Open)
+                {
+                    conn.Close();
+                }
+            }
+
             return testId;
         }
 

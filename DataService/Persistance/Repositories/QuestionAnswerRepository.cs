@@ -11,7 +11,7 @@ namespace Persistance.Repositories
 {
     public class QuestionAnswerRepository : SqlBase, IQuestionAnswerRespository
     {
-        public void AddQuestionAnswer(int questionID, int answerID, bool correct, SqlConnection conn = null)
+        public void AddOrUpdateQuestionAnswer(int questionID, int answerID, bool correct, SqlConnection conn = null)
         {
             bool nullConnection = false;
 

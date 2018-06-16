@@ -10,5 +10,6 @@ namespace Persistance.Interfaces
     {
         int AddAnswer(Answer answer, SqlConnection conn = null);
         List<Answer> GetAnswers(SqlConnection conn = null);
+        int UpdateAnswer(Answer answer, SqlConnection conn = null);
     }
 }

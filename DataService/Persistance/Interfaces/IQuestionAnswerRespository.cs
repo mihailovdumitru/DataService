@@ -8,7 +8,7 @@ namespace Persistance.Interfaces
 {
     public interface IQuestionAnswerRespository
     {
-        void AddQuestionAnswer(int questionID, int answerID, bool correct, SqlConnection conn = null);
+        void AddOrUpdateQuestionAnswer(int questionID, int answerID, bool correct, SqlConnection conn = null);
         List<QuestionWithAnswers> GetQuestionAnswers(SqlConnection conn = null);
     }
 }

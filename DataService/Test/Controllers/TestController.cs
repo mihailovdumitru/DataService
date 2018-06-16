@@ -38,24 +38,23 @@ namespace Test.Controllers
             return "value";
         }
         
-        // POST: api/Test
         [HttpPost]
-        //[EnableCors("UrlPolicy")]
         public ActionResult Post([FromBody]TestModelDto test)
         {
             test.LectureID = 1;
             test.TeacherID = 21;
             int testId = testFacade.AddTestObject(test);
             
-
-
-            return Ok("Cu succes");
+            return Ok("Succes");
         }
-        
+
         // PUT: api/Test/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut]
+        public ActionResult Put([FromBody]TestModelDto test)
         {
+            var id = testFacade.UpdateTest(test);
+
+            return Ok(id);
         }
         
         // DELETE: api/ApiWithActions/5

@@ -10,5 +10,6 @@ namespace Persistance.Interfaces
     {
         int AddQuestion(Question test, SqlConnection conn = null);
         List<Question> GetQuestionsByTestID(int testID, SqlConnection conn = null);
+        int UpdateQuestion(Question question, SqlConnection conn = null);
     }
 }

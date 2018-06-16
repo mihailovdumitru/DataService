@@ -41,6 +41,37 @@ namespace Persistance.Repositories
             return answerID;
         }
 
+        public int UpdateAnswer(Answer answer, SqlConnection conn = null)
+        {
+            int answerID = -1;
+            bool nullConnection = false;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_updateAnswer", conn))
+            {
+                cmd.Parameters.AddWithValue("@ANSWER", answer.Content);
+                cmd.Parameters.AddWithValue("@ANSWER_ID", answer.AnswerID);
+
+                cmd.CommandType = CommandType.StoredProcedure;
+                if (nullConnection)
+                    conn.Open();
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        answerID = DataUtil.GetDataReaderValue<int>("AnswerID", reader);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return answerID;
+        }
+
         public List<Answer> GetAnswers(SqlConnection conn = null)
         {
             bool nullConnection = false;

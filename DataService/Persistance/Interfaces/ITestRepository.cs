@@ -10,5 +10,6 @@ namespace Persistance.Interfaces
     {
         int AddTest(Test test, SqlConnection conn = null);
         IEnumerable<Test> GetTests(SqlConnection conn = null);
+        int UpdateTest(Test test, SqlConnection conn = null);
     }
 }

@@ -45,6 +45,40 @@ namespace Persistance.Repositories
             return questionID;
         }
 
+        public int UpdateQuestion(Question question, SqlConnection conn = null)
+        {
+            int questionID = -1;
+            bool nullConnection = false;
+
+            UtilitiesClass.CreateConnection(ref nullConnection, ref conn, base.GetConnectionString());
+
+            using (var cmd = new SqlCommand("sp_updateQuestion", conn))
+            {
+                cmd.Parameters.AddWithValue("@QUESTION", question.Content);
+                cmd.Parameters.AddWithValue("@POINTS", question.Points);
+                cmd.Parameters.AddWithValue("@TEST_ID", question.TestID);
+                cmd.Parameters.AddWithValue("@QUESTION_ID", question.QuestionID);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                if (nullConnection)
+                    conn.Open();
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        questionID = DataUtil.GetDataReaderValue<int>("QuestionID", reader);
+                    }
+                }
+                if (conn.State == ConnectionState.Open && nullConnection)
+                {
+                    conn.Close();
+                }
+            }
+
+            return questionID;
+        }
+
         public List<Question> GetQuestionsByTestID(int testID, SqlConnection conn = null)
         {
             bool nullConnection = false;
